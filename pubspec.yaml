@@ -1,0 +1,15 @@
+name: rikulo_uxl
+version: 0.5.0
+description: > 
+  Rikulo UXL Compiler for compiling UXL files to Dart files.
+  Rikulo UXL (User-interface eXtensible Language) is a markup
+  language allowing developers to define user-interface in XML.
+authors:
+- Tom Yeh <tomyeh@rikulo.org>
+homepage: http://rikulo.org
+dependencies:
+  unittest: { sdk: unittest }
+  args: { sdk: args }
+  logging: { sdk: logging }
+  html5lib:
+  rikulo: { git: git://github.com/rikulo/rikulo }
