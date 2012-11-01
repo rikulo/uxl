@@ -35,13 +35,16 @@ For more information, please refer to [Pub: Dependencies](http://pub.dartlang.or
 
 ##Usage
 
+    dart bin/uc.dart your-uxl-file(s)
+
+then, a dart file is generated for each UXL file you gave.
+
 ##Pros and Cons
 
 ###Pros
 
-* The user interface can be defined easily in a similar manner to HTML pages.
+* The user interface can be defined easily in a similar manner to HTML and XML pages.
 * MVC/MVP and data-binding for improving the separation of view, model and controller.
-* The content can be indexed by search engines if you embed it as HTML fragment.
 * Performance is as good as expressing in Dart.
 * Easy to debug since the generated Dart code is easy to understand.
 
