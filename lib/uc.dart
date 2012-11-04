@@ -6,26 +6,29 @@ library rikulo_uxl_uc;
 
 import 'dart:io';
 import 'package:args/args.dart';
-import 'package:html5lib/parser.dart' show parse;
-import 'package:rikulo_uxl/compiler.dart';
+import 'package:html5lib/parser.dart' show HtmlParser;
+import 'package:rikulo_uxl/compile.dart' show compile;
 
 const VERSION = "0.5.0";
 
-Encoding encoding = Encoding.UTF_8;
-bool verbose = false;
+class Environ {
+  Encoding encoding = Encoding.UTF_8;
+  bool verbose = false;
+  List<String> sources;
+}
 
 /** The entry point of UXL compiler. Used to implement `bin/uc.dart`.
  */
 void main() {
-  final names = _parseArgs();
-  if (names == null)
+  final env = new Environ();
+  if (!_parseArgs(env))
     return;
 
-  for (var name in names) {
+  for (var name in env.sources) {
     final source = new File(name);
     if (!source.existsSync()) {
       print("File not found: ${name}");
-      return null;
+      return;
     }
 
     int i = name.lastIndexOf('.');
@@ -33,15 +36,19 @@ void main() {
       i = -1;
     final dest = new File(i >= 0 ? "${name.substring(0, i + 1)}dart": "${name}.dart");
 
-    if (verbose) {
+    if (env.verbose) {
       int i = dest.name.lastIndexOf('/') + 1;
       print("Compile ${source.name} to ${i > 0 ? dest.name.substring(i): dest.name}");
     }
-    source.readAsText(encoding)
+    source.readAsText(env.encoding)
       .then((text) {
           final out = dest.openOutputStream();
           try {
-            new Compiler().compile(parse(text), out, encoding);
+            compile(
+              new HtmlParser(text, lowercaseElementName: false,
+                lowercaseAttrName: false, encoding: env.encoding.name)
+                .parseFragment(),
+              out, env.encoding);
           } finally {
             out.close();
           }
@@ -49,7 +56,7 @@ void main() {
   }
 }
 
-List<String> _parseArgs() {
+bool _parseArgs(Environ env) {
   final argParser = new ArgParser()
     ..addOption("encoding", abbr: 'e', help: "Specify character encoding used by source file")
     ..addFlag("help", abbr: 'h', negatable: false, help: "Display this message")
@@ -60,38 +67,39 @@ List<String> _parseArgs() {
   final usage = "Usage: uc [<flags>] <uxl-file> [<uxl-file>...]";
   if (args['version']) {
     print("UXL Compiler version $VERSION");
-    return null;
+    return false;
   }
   if (args['help']) {
     print(usage);
     print("\nCompiles the UXL file to a Dart file.\n\nOptions:");
     print(argParser.getUsage());
-    return null;
+    return false;
   }
 
   String val = args['encoding'];
   if (val != null)
   switch (val.toLowerCase()) {
     case 'ascii':
-      encoding = Encoding.ASCII;
+      env.encoding = Encoding.ASCII;
       break;
     case 'utf-8':
-      encoding = Encoding.UTF_8;
+      env.encoding = Encoding.UTF_8;
       break;
     case 'iso-8859-1':
-      encoding = Encoding.ISO_8859_1;
+      env.encoding = Encoding.ISO_8859_1;
       break;
     default:
       print("Unknown encoding: $val");
-      return null;
+      return false;
   }
 
   if (args.rest.isEmpty) {
     print(usage);
     print("Use -h for a list of possible options.");
-    return null;
+    return false;
   }
 
-  verbose = args['verbose'];
-  return args.rest;
+  env.verbose = args['verbose'];
+  env.sources = args.rest;
+  return true;
 }

@@ -1,0 +1,32 @@
+<!-- This is used to test all features of UXL.
+    The generated Dart file is not runnable.
+-->
+<?dart
+  library foo;
+
+  import 'package:rikulo/view.dart';
+?>
+
+<? template InputHead MagicBox ?>
+
+<Template name="Inputs" args="friends, zoo">
+  <View layout="type: linear; orient: vertical">
+  	<?whatever?>
+    <View forEach="each in ['text', 'password', 'multiline', 'number', 'date', 'color']"
+    layout="type: linear; align: center; spacing: 0 3">
+      ${each}:
+      <TextBox type="${each}" unless="each == 'multiline'"/>
+      <MultilineBox  if="each == 'multiline'"/>
+    </View>
+  </View>
+
+  <ListView model="${friends}" data-detail="${new InputDetail()}"
+    data-header="${new InputHeader()}"/>
+  <Template name="InputDetail" args="each">
+    <ListHead label="${each.name}" image="${each.photo}">
+  </Template>
+
+  <View layout="type: linear; orient: vertical" control="new MagicController()">
+    <MagicBox owner="${animal}" forEach="animal in zoo.animals"/>
+  </View>
+</Template>
