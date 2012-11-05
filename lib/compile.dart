@@ -8,7 +8,11 @@ import 'dart:io';
 import 'package:html5lib/dom.dart';
 
 part "src/compiler/Compiler.dart";
+part "src/compiler/Util.dart";
 
-void compile(Document source, OutputStream out, [Encoding encoding=Encoding.UTF_8]) {
-  new _Compiler(source, out, encoding).compile();
+/** Compiles the given UXL document to the given output stream.
+ * Notice that the caller has to close the output stream by himself.
+ */
+void compile(Document source, OutputStream out, {Encoding encoding:Encoding.UTF_8}) {
+  new Compiler(source, out, encoding: encoding).compile();
 }

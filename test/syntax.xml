@@ -2,31 +2,62 @@
     The generated Dart file is not runnable.
 -->
 <?dart
-  library foo;
+library foo;
 
-  import 'package:rikulo/view.dart';
+import 'package:rikulo/view.dart';
 ?>
 
 <? template InputHead MagicBox ?>
 
 <Template name="Inputs" args="friends, zoo">
-  <View layout="type: linear; orient: vertical">
-  	<?whatever?>
+  <View layout="type: linear; orient: vertical" style="border: 2px solid #333">
+    <InputHead label="Form"></InputHead>
     <View forEach="each in ['text', 'password', 'multiline', 'number', 'date', 'color']"
-    layout="type: linear; align: center; spacing: 0 3">
+    layout="type: linear; align: center; spacing: 0 3" class="foo1 foo2">
       ${each}:
-      <TextBox type="${each}" unless="each == 'multiline'"/>
-      <MultilineBox  if="each == 'multiline'"/>
+      <TextBox type="${each}" if="each != 'multiline'"></TextBox>
+      <MultilineBox if="each == 'multiline'"></MultilineBox>
     </View>
   </View>
 
   <ListView model="${friends}" data-detail="${new InputDetail()}"
     data-header="${new InputHeader()}"/>
   <Template name="InputDetail" args="each">
-    <ListHead label="${each.name}" image="${each.photo}">
+    <ListHead label="${each.name}" image="${each.photo}"></ListHead>
+    <InputHead label="${each.description}"/>
   </Template>
 
-  <View layout="type: linear; orient: vertical" control="new MagicController()">
-    <MagicBox owner="${animal}" forEach="animal in zoo.animals"/>
+  <View layout="type: linear; orient: vertical" control="new MagicControl()">
+    <MagicBox owner="${animal}" forEach="animal in zoo.animals"></MagicBox>
+    <TextView html="
+      ${friends[0]}
+      <ul>
+        <li>abc</li>
+        <li>xyz</li>
+      </ul>">
+    </TextView>
   </View>
 </Template>
+
+<?dart
+//used to make the generated dart error free
+class MagicBox {
+  List<View> create({parent, owner}) => new List();
+}
+class InputHead {
+  List<View> create({parent, label}) => new List();
+}
+class InputHeader {
+}
+class ListView extends View {
+  var model;
+}
+class ListHead extends View {
+  String label;
+  String image;
+}
+class MagicControl {
+  void apply(View view) {
+  }
+}
+?>
