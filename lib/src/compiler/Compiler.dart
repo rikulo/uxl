@@ -34,19 +34,17 @@ class Compiler {
       _doElement(node);
     } else if (node is ProcessingInstruction) {
       _doPI(node);
-    } else {
-
+    } else if (node is Text) {
+      final text = node.value.trim();
+      if (!text.isEmpty)
+        _newText(text);
     }
   }
   void _doElement(Element elem) {
     final name = elem.tagName;
-    switch (name) {
-      case "Template":
-        _doTemplate(elem);
-        return;
-      case "Apply":
-        _doApply(elem);
-        return;
+    if (name == "Template") {
+      _defineTemplate(elem);
+      return;
     }
 
     final attrs = elem.attributes;
@@ -76,99 +74,28 @@ class Compiler {
       }
     }
 
-    final viewVar = _nextVar(),
-      parentVar = _current.parentVar;
-    if (_templNames.contains(name)) {
-    //create from Template:
-    //  new Template(parent: parent, attr: val)..dataAttributes[attr] = val;
-      _write("${pre}final $viewVar = current = new $name().create(\n${pre}  parent: ${parentVar!=null?parentVar:'parent'}");
-
-      for (final attr in attrs.keys) {
-        if (attr.startsWith("data-")) {
-          _warning("Data attributes, $attr, not allowed in a template, $name");
-        } else {
-          final val = attrs[attr];
-          switch (attr) {
-          case "forEach": case "if": case "control":
-            break; //ignore
-          case "layout":
-          case "profile":
-          case "style":
-          case "class":
-            _warning("Template doesn't support $attr");
-            break;
-          default:
-            _write(',\n$pre  $attr: ${_outAttrValue(val)}');
-            break;
-          }
-        }
-      }
-
-      _writeln(");");
-      if (parentVar == null)
-        _writeln("${pre}_vcr_.addAll($viewVar);");
-      _writeln("");
-
+    if (name == "Apply") {
+      _doApply(elem.nodes);
+      _checkAttrs(elem, _applyAllowed);
+    } else if (_templNames.contains(name)) {
+      _newTempalte(name, attrs);
+      if (!elem.nodes.isEmpty)
+        _warning("$name is a template. It can't have child elements.");
     } else {
-    //Create View:
-    // new View()..attr = val..dataAttributes[attr] = val;
-      _write("${pre}final $viewVar = current = new $name()");
-
-      for (final attr in attrs.keys) {
-        final val = attrs[attr];
-        if (attr.startsWith("data-")) {
-          _write('\n$pre  ..dataAttributes["${attr.substring(5)}"] = ${_outAttrValue(val)}');
-        } else {
-          switch (attr) {
-          case "forEach": case "if": case "control":
-            break; //ignore
-          case "layout":
-          case "profile":
-            _write('\n$pre  ..$attr.text = ${_outAttrValue(val)}');
-            break;
-          case "style":
-            _write('\n$pre  ..$attr.cssText = ${_outAttrValue(val)}');
-            break;
-          case "class":
-            for (final css in val.split(" "))
-              _write('\n$pre  ..classes.add("$css")');
-            break;
-          default:
-            _write('\n$pre  ..$attr = ${_outAttrValue(val)}');
-            break;
-          }
-        }
-      }
-      _writeln(";");
-
-      if (parentVar != null)
-        _writeln("$pre$parentVar.addChild($viewVar);\n");
-      else
-        _writeln("${pre}if (parent != null)\n$pre  parent.addChild($viewVar);\n${pre}_vcr_.add($viewVar);\n");
+      _newView(name, attrs, elem.nodes);
     }
 
-    _pushContext(parentVar: viewVar);
-    _doChildren(elem);
-    _popContext();
-
-    if (forEach != null) {
-      _current.pre = pre = preForEach;
-      _writeln("$pre}\n");
-    }
     if (ifc != null) {
       _current.pre = pre = preIf;
       _writeln("$pre}\n");
     }
-
-    final control = attrs["control"];
-    if (control != null) {
-      if (control.isEmpty) {
-        _warning("The control attribute is empty");
-      } else {
-        _writeln("$pre($control).apply($viewVar);");
-      }
+    if (forEach != null) {
+      _current.pre = pre = preForEach;
+      _writeln("$pre}\n");
     }
   }
+
+  ///Handles processing instructions
   void _doPI(ProcessingInstruction pi) {
     switch (pi.target) {
       case "dart":
@@ -185,38 +112,140 @@ class Compiler {
     }
   }
 
-  //Handles Template
-  void _doTemplate(Element elem) {
+  //Handles the definition of a template
+  void _defineTemplate(Element elem) {
     ListOutputStream innerOut = _current != null ? new ListOutputStream(): null;
     _pushContext(dest: innerOut);
     final name = _requiredAttr(elem, "name");
-    var args = elem.attributes["args"];
+    var desc = elem.attributes["description"],
+      args = elem.attributes["args"];
+    if (desc == null)
+      desc = "A template to create views.";
     args = args != null && !args.trim().isEmpty ? "parent, $args": "parent";
-    _noAttrs(elem, ["if", "unless", "forEach"]);
+    _checkAttrs(elem, _templAllowed);
     _write('''\n
-///A template.
-class $name {
-  ///Creates and returns views defined in this template.
-  List<View> create({$args}) {
-    List<View> _vcr_ = new List();
-    var current;\n''');
+/** $desc */
+List<View> $name({$args}) {
+  List<View> _vcr_ = new List();
+  var _this_;\n''');
 
-    _doChildren(elem);
+    for (final node in elem.nodes)
+      _do(node);
 
-    _writeln("    return _vcr_;\n  }\n}");
+    _writeln("  return _vcr_;\n}");
     _popContext();
     if (innerOut != null)
       _extraOutput.add(innerOut.read());
   }
 
-  ///Handles <Apply>
-  void _doApply(Element elem) {
+  /** Handles the instantiation of a template.
+   *
+   *    Template(parent: parent, attr: val)..dataAttributes[attr] = val;
+   */
+  void _newTempalte(String name, Map<String, String> attrs) {
+    final viewVar = _nextVar(),
+      parentVar = _current.parentVar,
+      pre = _current.pre;
+    _write("${pre}final $viewVar = _this_ =\n${pre}  $name(parent: ${parentVar!=null?parentVar:'parent'}");
 
+    for (final attr in attrs.keys) {
+      if (attr.startsWith("data-")) {
+        _warning("Data attributes, $attr, not allowed in a template, $name");
+      } else {
+        final val = attrs[attr];
+        switch (attr) {
+        case "forEach": case "if":
+          break; //ignore
+        case "control": //not allowed in template
+        case "layout":
+        case "profile":
+        case "style":
+        case "class":
+          _warning("Template doesn't support $attr");
+          break;
+        default:
+          _write(', $attr: ${_unwrap(val)}');
+          break;
+        }
+      }
+    }
+
+    _writeln(");");
+    if (parentVar == null)
+      _writeln("${pre}_vcr_.addAll($viewVar);");
+    _writeln("");
+  }
+  /** Handles the instantiation of a view.
+   *
+   *    new View()..attr = val..dataAttributes[attr] = val;
+   */
+  void _newView(String name, Map<String, String> attrs, List<Node> children) {
+    final viewVar = _nextVar(),
+      parentVar = _current.parentVar,
+      pre = _current.pre;
+    _write("${pre}final $viewVar = _this_ = new $name()");
+
+    for (final attr in attrs.keys) {
+      final val = attrs[attr];
+      if (attr.startsWith("data-")) {
+        _write('\n$pre  ..dataAttributes["${attr.substring(5)}"] = ${_unwrap(val)}');
+      } else {
+        switch (attr) {
+        case "forEach": case "if": case "control":
+          break; //ignore
+        case "layout":
+        case "profile":
+          _write('\n$pre  ..$attr.text = ${_unwrap(val)}');
+          break;
+        case "style":
+          _write('\n$pre  ..$attr.cssText = ${_unwrap(val)}');
+          break;
+        case "class":
+          for (final css in val.split(" "))
+            _write('\n$pre  ..classes.add("$css")');
+          break;
+        default:
+          if (_isTextField(name, attr))
+            _write("\n$pre  ..$attr = '''$val'''");
+          else
+            _write('\n$pre  ..$attr = ${_unwrap(val)}');
+          break;
+        }
+      }
+    }
+    _writeln(";");
+
+    if (parentVar != null)
+      _writeln("$pre$parentVar.addChild($viewVar);\n");
+    else
+      _writeln('''
+${pre}if (parent != null)
+$pre  parent.addChild($viewVar);
+${pre}_vcr_.add($viewVar);\n''');
+
+    _pushContext(parentVar: viewVar);
+    for (final node in children)
+      _do(node);
+    _popContext();
+
+    final control = attrs["control"];
+    if (control != null) {
+      if (control.isEmpty) {
+        _warning("The control attribute is empty");
+      } else {
+        _writeln("${pre}($control)($viewVar);");
+      }
+    }
   }
 
-  ///Handles child nodes
-  void _doChildren(Element elem) {
-    for (final node in elem.nodes)
+  //Handle Text
+  void _newText(String text) {
+    _newView("TextView", {"text": text}, []);
+  }
+
+  //Handle Apply
+  void _doApply(List<Node> children) {
+    for (final node in children)
       _do(node);
   }
 
@@ -227,14 +256,44 @@ class $name {
       throw new CompileException("The $attr attribute is required");
     return val;
   }
-  void _noAttrs(Element elem, List<String> attrs) {
-    for (final attr in attrs)
-      if (elem.attributes[attr] != null)
-        _warning("The $attr attribute not allowed");
+  void _checkAttrs(Element elem, Set<String> allowedAttrs) {
+    for (final attr in elem.attributes.keys)
+      if (!allowedAttrs.contains(attr))
+        _warning("The $attr attribute not allowed in ${elem.tagName}");
   }
-  String _outAttrValue(String val)
-  => val.startsWith("\${") && val.endsWith("}") && val.indexOf("\${", 1) < 0 ?
-      val.substring(2, val.length -1): "'''$val'''";
+  static final Set<String> _templAllowed =
+    new Set.from(const ["name", "args", "description"]);
+  static final Set<String> _applyAllowed =
+    new Set.from(const ["if", "forEach"]);
+
+  ///Generates the attribute value.
+  ///We have to *unwrap* $ if necessary to avoid the string conversion
+  String _unwrap(String val) {
+    if (val.length > 1 && val[0] == "\$") { //handle ${}
+      var cc = val[1],
+        len = val.length;
+      if (cc == '{') {
+        if (val[len - 1] == '}' && val.indexOf("\${", 2) < 0)
+          return val.substring(2, len -1);
+      } else { //handle $foo
+        for (int i = 1;;) {
+          if (i >= len)
+            return val.substring(1, len);
+          cc = val[i++];
+          if (!_isLetter(cc) && !_isDigit(cc) && cc != "_" && cc != "\$")
+            break;
+        }
+      }
+    }
+    return "'''$val'''";
+  }
+  ///Test if the given field of the given view class is a text type.
+  //This is a temporary solution. It is better to count on mirrors.
+  //Or at least to import a file describing them
+  bool _isTextField(String viewcls, String field)
+  => field == "id" || (_flds.contains(field) && _clses.contains(viewcls));
+  final Set<String> _clses = new Set.from(const ["TextView", "Button", "CheckBox"]);
+  final Set<String> _flds = new Set.from(const ["text", "html"]);
 
   String _nextVar()
   => "${_current.parentVar != null ? _current.parentVar: '_v'}${_current.nextId++}_";
@@ -249,7 +308,7 @@ class $name {
   void _pushContext({OutputStream dest, String parentVar}) {
     _ctxes.addFirst(new _Context(_current, parentVar,
       dest != null ? dest: _current != null ? _current.dest: destination,
-      dest == null && _current != null ? _current.pre: "    "));
+      dest == null && _current != null ? _current.pre: "  "));
     _current = _ctxes.first;
   }
   void _popContext() {
@@ -271,4 +330,18 @@ class _Context {
 ///show warning messages
 void _warning(String msg) {
   print("Warning: $msg");
+}
+
+//FUTURE: use rikulo-commons instead
+const _ZERO = 48, _LOWER_A = 97, _UPPER_A = 65;
+
+bool _isLetter(String char) {
+  if (char == null) return false;
+  int cc = char.charCodeAt(0);
+  return cc >= _LOWER_A && cc < _LOWER_A + 26 || cc >= _UPPER_A && cc < _UPPER_A + 26;
+}
+bool _isDigit(String char) {
+  if (char == null) return false;
+  int cc = char.charCodeAt(0);
+  return cc >= _ZERO && cc < _ZERO + 10;
 }

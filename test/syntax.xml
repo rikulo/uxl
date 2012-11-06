@@ -9,25 +9,25 @@ import 'package:rikulo/view.dart';
 
 <? template InputHead MagicBox ?>
 
-<Template name="Inputs" args="friends, zoo">
+<Template name="Inputs" args="friends, zoo"
+description="A template to create a group of input views">
   <View layout="type: linear; orient: vertical" style="border: 2px solid #333">
     <InputHead label="Form"></InputHead>
     <View forEach="each in ['text', 'password', 'multiline', 'number', 'date', 'color']"
     layout="type: linear; align: center; spacing: 0 3" class="foo1 foo2">
-      ${each}:
-      <TextBox type="${each}" if="each != 'multiline'"></TextBox>
+      ${each}
+      <TextBox type="$each" if="each != 'multiline'"></TextBox>
       <MultilineBox if="each == 'multiline'"></MultilineBox>
     </View>
   </View>
 
-  <ListView model="${friends}" data-detail="${new InputDetail()}"
-    data-header="${new InputHeader()}"/>
+  <ListView model="${friends}" data-detail="${InputDetail}" data-header="${InputHeader}"/>
   <Template name="InputDetail" args="each">
     <ListHead label="${each.name}" image="${each.photo}"></ListHead>
-    <InputHead label="${each.description}"/>
+    <InputHead label="${each.description}"></InputHead>
   </Template>
 
-  <View layout="type: linear; orient: vertical" control="new MagicControl()">
+  <View layout="type: linear; orient: vertical" control="MagicControl">
     <MagicBox owner="${animal}" forEach="animal in zoo.animals"></MagicBox>
     <TextView html="
       ${friends[0]}
@@ -39,14 +39,21 @@ import 'package:rikulo/view.dart';
   </View>
 </Template>
 
+<Template name="AnotherFood" args="foods">
+  <Apply forEach="each in foods">
+    $each is found.
+    <Apply if="each == 'orange'">
+      <View class="hilite">This is nice.</View>
+    </Apply>
+    More and more to come.
+  </Apply>
+</Template>
+
 <?dart
 //used to make the generated dart error free
-class MagicBox {
-  List<View> create({parent, owner}) => new List();
-}
-class InputHead {
-  List<View> create({parent, label}) => new List();
-}
+List<View> MagicBox({parent, owner}) => new List();
+List<View> InputHead({parent, label}) => new List();
+
 class InputHeader {
 }
 class ListView extends View {
@@ -56,8 +63,6 @@ class ListHead extends View {
   String label;
   String image;
 }
-class MagicControl {
-  void apply(View view) {
-  }
+void MagicControl(View view) {
 }
 ?>
