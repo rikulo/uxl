@@ -205,8 +205,12 @@ List<View> $name({$args}) {
             _write('\n$pre  ..classes.add("$css")');
           break;
         default:
-          if (_isTextField(name, attr))
-            _write("\n$pre  ..$attr = '''$val'''");
+        //Note: to really handle it well, we have to detect if a field is text.
+        //However, it depends on mirrors and UXL files might be compiled before
+        //other dart files are ready. It is better to leave it to the users:
+        //${foo.toString()} (if they have to convert it)
+          if (attr == ':') //passed by _newText to indicate no unwrapping
+            _write("\n$pre  ..text = '''$val'''");
           else
             _write('\n$pre  ..$attr = ${_unwrap(val)}');
           break;
@@ -240,7 +244,7 @@ ${pre}_vcr_.add($viewVar);\n''');
 
   //Handle Text
   void _newText(String text) {
-    _newView("TextView", {"text": text}, []);
+    _newView("TextView", {":": text}, []); //":" to indicate no unwrapping
   }
 
   //Handle Apply
@@ -287,13 +291,6 @@ ${pre}_vcr_.add($viewVar);\n''');
     }
     return "'''$val'''";
   }
-  ///Test if the given field of the given view class is a text type.
-  //This is a temporary solution. It is better to count on mirrors.
-  //Or at least to import a file describing them
-  bool _isTextField(String viewcls, String field)
-  => field == "id" || (_flds.contains(field) && _clses.contains(viewcls));
-  final Set<String> _clses = new Set.from(const ["TextView", "Button", "CheckBox"]);
-  final Set<String> _flds = new Set.from(const ["text", "html"]);
 
   String _nextVar()
   => "${_current.parentVar != null ? _current.parentVar: '_v'}${_current.nextId++}_";
