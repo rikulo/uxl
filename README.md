@@ -5,7 +5,7 @@
 Unlike [Rikulo EUL](https://github.com/rikulo/rikulo-eul), UXL has to be compiled to Dart. Performance is better and it is easier to debug.
 
 * [Home](http://rikulo.org)
-* [UXL Documentation](http://docs.rikulo.org/UXL)
+* [UXL Documentation](http://docs.rikulo.org/latest/UXL)
 * [UXL API Reference](http://api.rikulo.org/rikulo-uxl/latest/)
 * [Discussion](http://stackoverflow.com/questions/tagged/rikulo)
 * [Issues](https://github.com/rikulo/rikulo-uxl/issues)
