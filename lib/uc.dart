@@ -11,7 +11,7 @@ import 'package:rikulo_uxl/compile.dart' show compile;
 
 const VERSION = "0.5.0";
 
-class Environ {
+class _Environ {
   Encoding encoding = Encoding.UTF_8;
   bool verbose = false;
   List<String> sources;
@@ -20,7 +20,7 @@ class Environ {
 /** The entry point of UXL compiler. Used to implement `bin/uc.dart`.
  */
 void main() {
-  final env = new Environ();
+  final env = new _Environ();
   if (!_parseArgs(env))
     return;
 
@@ -57,7 +57,7 @@ void main() {
   }
 }
 
-bool _parseArgs(Environ env) {
+bool _parseArgs(_Environ env) {
   final argParser = new ArgParser()
     ..addOption("encoding", abbr: 'e', help: "Specify character encoding used by source file")
     ..addFlag("help", abbr: 'h', negatable: false, help: "Display this message")
