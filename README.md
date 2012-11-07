@@ -1,16 +1,14 @@
 #Rikulo UXL
 
-[Rikulo UXL](http://rikulo.org) (User-interface eXtensible language) is a markup language allowing developers to define user-interfaces in XML.
-
-Unlike [Rikulo EUL](https://github.com/rikulo/rikulo-eul), UXL has to be compiled to Dart. Performance is better and it is easier to debug.
+[Rikulo UXL](http://rikulo.org) (User-interface eXtensible language) is a markup language allowing developers to define user-interfaces in XML in a similar manner to authoring HTML and XML pages.
 
 * [Home](http://rikulo.org)
-* [UXL Documentation](http://docs.rikulo.org/latest/UXL)
+* [UXL Documentation](http://docs.rikulo.org/rikulo/latest/UXL)
 * [UXL API Reference](http://api.rikulo.org/rikulo-uxl/latest/)
 * [Discussion](http://stackoverflow.com/questions/tagged/rikulo)
 * [Issues](https://github.com/rikulo/rikulo-uxl/issues)
 
-Rikulo EUL is distributed under the Apache 2.0 License.
+Rikulo UXL is distributed under the Apache 2.0 License.
 
 ##Install from Dart Pub Repository
 
@@ -35,13 +33,15 @@ For more information, please refer to [Pub: Dependencies](http://pub.dartlang.or
 
 ##Usage
 
+At first, you have to prepare a UXL file defining the user interface. Then, run `uc` (UXL compiler) to compile it into the dart file with [command line interface](http://en.wikipedia.org/wiki/Command-line_interface):
+
     dart bin/uc.dart your-uxl-file(s)
 
-then, a dart file is generated for each UXL file you gave. To generate a more readable file, you can specify the verbose option, `-v`:
+A dart file is generated for each UXL file you gave. To generate a more readable file, you can specify the verbose option, `-v`:
 
     dart bin/uc.dart -v your-uxl-file(s)
 
-For example, here is a UXL file defining a template called `ScrollViewTemplate`:
+A UXL file can define one or multiple templates. For example, here is a UXL file defining a template called `ScrollViewTemplate`:
 
     <Template name="ScrollViewTemplate" args="rows: 30, cols: 30">
       <ScrollView class="scroll-view"
@@ -57,7 +57,7 @@ For example, here is a UXL file defining a template called `ScrollViewTemplate`:
       </ScrollView>
     </Template>
 
-It will be compiled to a dart file containing a function called `ScrollViewTemplate`:
+A template is actually compiled to a Dart function with the name specified in UXL:
 
     List<View> ScrollViewTemplate({parent, rows: 30, cols: 30}) {
       List<View> _vcr_ = new List();
@@ -91,6 +91,8 @@ Then, you can instantiate views based on the template whatever you want:
 ###Cons
 
 * It has to be compiled to Dart in advance.
+
+> Unlike [Rikulo EUL](https://github.com/rikulo/rikulo-eul), UXL has to be compiled to Dart. Performance is better and it is easier to debug.
 
 ##Notes to Contributors
 
