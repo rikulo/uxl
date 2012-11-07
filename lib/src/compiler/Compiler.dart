@@ -57,7 +57,7 @@ class Compiler {
         forEach = null;
         _warning("The forEach attribute is empty");
       } else {
-        _writeln("${pre}for (final $forEach) {");
+        _writeln("${pre}for (var $forEach) {");
         _current.pre = pre = "$pre  ";
       }
     }

@@ -16,19 +16,19 @@ description="A template to create a group of input views">
     <View forEach="each in ['text', 'password', 'multiline', 'number', 'date', 'color']"
     layout="type: linear; align: center; spacing: 0 3" class="foo1 foo2">
       ${each}
-      <TextBox type="$each" if="each != 'multiline'"></TextBox>
-      <MultilineBox if="each == 'multiline'"></MultilineBox>
+      <TextBox type="$each" if="each != 'multiline'"/>
+      <MultilineBox if="each == 'multiline'"/>
     </View>
   </View>
 
   <ListView model="${friends}" data-detail="${InputDetail}" data-header="${InputHeader}"/>
   <Template name="InputDetail" args="each">
-    <ListHead label="${each.name}" image="${each.photo}"></ListHead>
-    <InputHead label="${each.description}"></InputHead>
+    <ListHead label="${each.name}" image="${each.photo}"/>
+    <InputHead label="${each.description}"/>
   </Template>
 
   <View layout="type: linear; orient: vertical" control="MagicControl">
-    <MagicBox owner="${animal}" forEach="animal in zoo.animals"></MagicBox>
+    <MagicBox owner="${animal}" forEach="animal in zoo.animals"/>
     <TextView html="
       ${friends[0]}
       <ul>

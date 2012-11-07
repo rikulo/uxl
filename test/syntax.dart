@@ -21,7 +21,7 @@ List<View> Inputs({parent, friends, zoo}) {
   final _v0_0_ = _this_ =
     InputHead(parent: _v0_, label: '''Form''');
 
-  for (final each in ['text', 'password', 'multiline', 'number', 'date', 'color']) {
+  for (var each in ['text', 'password', 'multiline', 'number', 'date', 'color']) {
     final _v0_1_ = _this_ = new View()
       ..layout.text = '''type: linear; align: center; spacing: 0 3'''
       ..classes.add("foo1")
@@ -55,26 +55,28 @@ List<View> Inputs({parent, friends, zoo}) {
     parent.addChild(_v1_);
   _vcr_.add(_v1_);
 
-  final _v1_0_ = _this_ = new View()
+  final _v2_ = _this_ = new View()
     ..layout.text = '''type: linear; orient: vertical''';
-  _v1_.addChild(_v1_0_);
+  if (parent != null)
+    parent.addChild(_v2_);
+  _vcr_.add(_v2_);
 
-  for (final animal in zoo.animals) {
-    final _v1_0_0_ = _this_ =
-      MagicBox(parent: _v1_0_, owner: animal);
+  for (var animal in zoo.animals) {
+    final _v2_0_ = _this_ =
+      MagicBox(parent: _v2_, owner: animal);
 
   }
 
-  final _v1_0_1_ = _this_ = new TextView()
+  final _v2_1_ = _this_ = new TextView()
     ..html = '''
       ${friends[0]}
       <ul>
         <li>abc</li>
         <li>xyz</li>
       </ul>''';
-  _v1_0_.addChild(_v1_0_1_);
+  _v2_.addChild(_v2_1_);
 
-  (MagicControl)(_v1_0_);
+  (MagicControl)(_v2_);
   return _vcr_;
 }
 
@@ -83,7 +85,7 @@ List<View> Inputs({parent, friends, zoo}) {
 List<View> AnotherFood({parent, foods}) {
   List<View> _vcr_ = new List();
   var _this_;
-  for (final each in foods) {
+  for (var each in foods) {
     final _v0_ = _this_ = new TextView()
       ..text = '''$each is found.''';
     if (parent != null)
