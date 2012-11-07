@@ -37,7 +37,47 @@ For more information, please refer to [Pub: Dependencies](http://pub.dartlang.or
 
     dart bin/uc.dart your-uxl-file(s)
 
-then, a dart file is generated for each UXL file you gave.
+then, a dart file is generated for each UXL file you gave. To generate a more readable file, you can specify the verbose option, `-v`:
+
+    dart bin/uc.dart -v your-uxl-file(s)
+
+For example, here is a UXL file defining a template called `ScrollViewTemplate`:
+
+    <Template name="ScrollViewTemplate" args="rows: 30, cols: 30">
+      <ScrollView class="scroll-view"
+      profile="location: center center; width: 80%; height: 80%">
+        <Apply forEach="r = 0; r < rows; ++r">
+          <Apply forEach="c = 0; c < cols; ++c">
+            <View style="border: 1px solid #553; background-color: ${CSS.color(250 - r * 4, 250 - c * 4, 200)}"
+                left="${r * 50 + 2}" top="${c * 50 + 2}"
+                width="${46}" height="${46}">
+            </View>
+          </Apply>
+        </Apply>
+      </ScrollView>
+    </Template>
+
+It will be compiled to a dart file containing a function called `ScrollViewTemplate`:
+
+    List<View> ScrollViewTemplate({parent, rows: 30, cols: 30}) {
+      List<View> _vcr_ = new List();
+      var _this_;
+
+      final _v0_ = _this_ = new ScrollView()
+      ...
+      _vcr_.add(_v0_);
+      ...
+      return _vcr_;
+    }
+
+> For a complete dart file, please refer to [here](https://github.com/rikulo/rikulo-uxl/blob/master/example/scroll-view/ScrollView.uxl.dart).
+
+Then, you can instantiate views based on the template whatever you want:
+
+    void main() {
+      final View mainView = new View()..addToDocument();
+      ScrollViewTemplate(parent: mainView);
+    }
 
 ##Pros and Cons
 
