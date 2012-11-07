@@ -1,0 +1,19 @@
+<?dart
+
+import "package:rikulo/view.dart";
+
+void main() {
+  SignIn()[0].addToDocument();
+}
+?>
+
+<Template name="SignIn">
+  <Panel layout="type:linear; orient: vertical; spacing: 4"
+    profile="location: center center; width: 180; height: 145">
+    Username or Email
+    <TextBox id="username" />
+    Password
+    <TextBox id="password"/>
+    <Button text="Sign in" profile="spacing: 12 4 4 4"/>
+  </Panel>
+</Template>
