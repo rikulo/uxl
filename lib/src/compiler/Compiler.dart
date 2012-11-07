@@ -57,7 +57,7 @@ class Compiler {
         forEach = null;
         _warning("The forEach attribute is empty");
       } else {
-        _writeln("${pre}for (var $forEach) {");
+        _writeln("\n${pre}for (var $forEach) {");
         _current.pre = pre = "$pre  ";
       }
     }
@@ -69,7 +69,7 @@ class Compiler {
         ifc = null;
         _warning("The if attribute is empty");
       } else {
-        _writeln("${pre}if ($ifc) {");
+        _writeln("\n${pre}if ($ifc) {");
         _current.pre = pre = "$pre  ";
       }
     }
@@ -87,11 +87,11 @@ class Compiler {
 
     if (ifc != null) {
       _current.pre = pre = preIf;
-      _writeln("$pre}\n");
+      _writeln("$pre}");
     }
     if (forEach != null) {
       _current.pre = pre = preForEach;
-      _writeln("$pre}\n");
+      _writeln("$pre}");
     }
   }
 
@@ -123,11 +123,11 @@ class Compiler {
       desc = "A template to create views.";
     args = args != null && !args.trim().isEmpty ? "parent, $args": "parent";
     _checkAttrs(elem, _templAllowed);
-    _write('''\n
+    _writeln('''\n
 /** $desc */
 List<View> $name({$args}) {
   List<View> _vcr_ = new List();
-  var _this_;\n''');
+  var _this_;''');
 
     for (final node in elem.nodes)
       _do(node);
@@ -146,7 +146,7 @@ List<View> $name({$args}) {
     final viewVar = _nextVar(),
       parentVar = _current.parentVar,
       pre = _current.pre;
-    _write("${pre}final $viewVar = _this_ =\n${pre}  $name(parent: ${parentVar!=null?parentVar:'parent'}");
+    _write("\n${pre}final $viewVar = _this_ =\n${pre}  $name(parent: ${parentVar!=null?parentVar:'parent'}");
 
     for (final attr in attrs.keys) {
       if (attr.startsWith("data-")) {
@@ -173,7 +173,6 @@ List<View> $name({$args}) {
     _writeln(");");
     if (parentVar == null)
       _writeln("${pre}_vcr_.addAll($viewVar);");
-    _writeln("");
   }
   /** Handles the instantiation of a view.
    *
@@ -183,7 +182,7 @@ List<View> $name({$args}) {
     final viewVar = _nextVar(),
       parentVar = _current.parentVar,
       pre = _current.pre;
-    _write("${pre}final $viewVar = _this_ = new $name()");
+    _write("\n${pre}final $viewVar = _this_ = new $name()");
 
     for (final attr in attrs.keys) {
       final val = attrs[attr];
@@ -220,12 +219,12 @@ List<View> $name({$args}) {
     _writeln(";");
 
     if (parentVar != null)
-      _writeln("$pre$parentVar.addChild($viewVar);\n");
+      _writeln("$pre$parentVar.addChild($viewVar);");
     else
       _writeln('''
 ${pre}if (parent != null)
 $pre  parent.addChild($viewVar);
-${pre}_vcr_.add($viewVar);\n''');
+${pre}_vcr_.add($viewVar);''');
 
     _pushContext(parentVar: viewVar);
     for (final node in children)
