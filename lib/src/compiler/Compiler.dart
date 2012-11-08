@@ -119,17 +119,19 @@ class Compiler {
     ListOutputStream innerOut = _current != null ? new ListOutputStream(): null;
     _pushContext(dest: innerOut);
     final name = _requiredAttr(elem, "name");
+    if (verbose)
+      print("Generate template $name...");
     var desc = elem.attributes["description"],
       args = elem.attributes["args"];
     if (desc == null)
       desc = "Template, $name, for creating views.";
-    args = args != null && !args.trim().isEmpty ? "parent, $args": "parent";
+    args = args != null && !args.trim().isEmpty ? ", $args": "";
     _checkAttrs(elem, _templAllowed);
     _writeln('''\n
 /** $desc */
-List<View> $name({$args}) {
+List<View> $name({View parent$args}) {
   List<View> _vcr_ = new List();
-  var _this_;''');
+  View _this_;''');
 
     for (final node in elem.nodes)
       _do(node);
@@ -148,11 +150,9 @@ List<View> $name({$args}) {
     final viewVar = _nextVar(),
       parentVar = _current.parentVar,
       pre = _current.pre;
-    if (verbose) {
-      _write("\n$pre//");
-      _writeTagComment(name, attrs);
-    }
-    _write("\n${pre}final $viewVar = _this_ =\n${pre}  $name(parent: ${parentVar!=null?parentVar:'parent'}");
+    _write("\n$pre//");
+    _writeTagComment(name, attrs);
+    _write("\n${pre}final $viewVar = $name(parent: ${parentVar!=null?parentVar:'parent'}");
 
     for (final attr in attrs.keys) {
       if (attr.startsWith("data-")) {
@@ -188,19 +188,18 @@ List<View> $name({$args}) {
     final viewVar = _nextVar(),
       parentVar = _current.parentVar,
       pre = _current.pre;
-    if (verbose) {
-      _write("\n$pre//");
-      var val;
-      if (name == "TextView" && (val = attrs[_PLAIN_TEXT]) != null) {
-        _write(val);
-      } else {
-        _writeTagComment(name, attrs);
-      }
+
+    _write("\n$pre//");
+    var val;
+    if (name == "TextView" && (val = attrs[_PLAIN_TEXT]) != null) {
+      _write(val);
+    } else {
+      _writeTagComment(name, attrs);
     }
-    _write("\n${pre}final $viewVar = _this_ = new $name()");
+    _write("\n${pre}final $viewVar = (_this_ = new $name())");
 
     for (final attr in attrs.keys) {
-      final val = attrs[attr];
+      val = attrs[attr];
       if (attr.startsWith("data-")) {
         _write('\n$pre  ..dataAttributes["${attr.substring(5)}"] = ${_unwrap(val)}');
       } else {

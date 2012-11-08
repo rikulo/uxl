@@ -9,34 +9,40 @@ void main() {
 
 
 /** Template, SignIn, for creating views. */
-List<View> SignIn({parent}) {
+List<View> SignIn({View parent}) {
   List<View> _vcr_ = new List();
-  var _this_;
+  View _this_;
 
-  final _v0_ = _this_ = new Panel()
+  //<Panel layout="type:linear; orient: vertical; spacing: 4" profile="location...>
+  final _v0_ = (_this_ = new Panel())
     ..layout.text = '''type:linear; orient: vertical; spacing: 4'''
     ..profile.text = '''location: center center; width: 180; height: 145''';
   if (parent != null)
     parent.addChild(_v0_);
   _vcr_.add(_v0_);
 
-  final _v0_0_ = _this_ = new TextView()
+  //Username or Email
+  final _v0_0_ = (_this_ = new TextView())
     ..text = '''Username or Email''';
   _v0_.addChild(_v0_0_);
 
-  final _v0_1_ = _this_ = new TextBox()
+  //<TextBox id="username">
+  final _v0_1_ = (_this_ = new TextBox())
     ..id = '''username''';
   _v0_.addChild(_v0_1_);
 
-  final _v0_2_ = _this_ = new TextView()
+  //Password
+  final _v0_2_ = (_this_ = new TextView())
     ..text = '''Password''';
   _v0_.addChild(_v0_2_);
 
-  final _v0_3_ = _this_ = new TextBox()
+  //<TextBox id="password">
+  final _v0_3_ = (_this_ = new TextBox())
     ..id = '''password''';
   _v0_.addChild(_v0_3_);
 
-  final _v0_4_ = _this_ = new Button()
+  //<Button text="Sign in" profile="spacing: 12 4 4 4">
+  final _v0_4_ = (_this_ = new Button())
     ..text = '''Sign in'''
     ..profile.text = '''spacing: 12 4 4 4''';
   _v0_.addChild(_v0_4_);

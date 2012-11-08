@@ -2,12 +2,13 @@
 //Source: example/scroll-view/ScrollView.uxl.xml
 
 
-/** A template to create views. */
-List<View> ScrollViewTemplate({parent, rows: 30, cols: 30}) {
+/** Template, ScrollViewTemplate, for creating views. */
+List<View> ScrollViewTemplate({View parent, rows: 30, cols: 30}) {
   List<View> _vcr_ = new List();
-  var _this_;
+  View _this_;
 
-  final _v0_ = _this_ = new ScrollView()
+  //<ScrollView class="scroll-view" profile="location: center center; width: 80...>
+  final _v0_ = (_this_ = new ScrollView())
     ..classes.add("scroll-view")
     ..profile.text = '''location: center center; width: 80%; height: 80%''';
   if (parent != null)
@@ -18,7 +19,8 @@ List<View> ScrollViewTemplate({parent, rows: 30, cols: 30}) {
 
     for (var c = 0; c < cols; ++c) {
 
-      final _v0_0_ = _this_ = new View()
+      //<View style="border: 1px solid #553; background-color: ${CSS.color(250 - r...>
+      final _v0_0_ = (_this_ = new View())
         ..style.cssText = '''border: 1px solid #553; background-color: ${CSS.color(250 - r * 4, 250 - c * 4, 200)}'''
         ..left = r * 50 + 2
         ..top = c * 50 + 2
