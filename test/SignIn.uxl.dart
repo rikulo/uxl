@@ -8,7 +8,7 @@ void main() {
 }
 
 /** Template, SignIn, for creating views. */
-List<View> SignIn({View parent}) {
+List<View> SignIn({View parent, rememberMe: ''}) {
   List<View> _vcr_ = new List();
   View _this_;
 
@@ -25,9 +25,10 @@ List<View> SignIn({View parent}) {
     ..text = '''Username or Email''';
   _v0_.addChild(_v0_0_);
 
-  //<TextBox id="username">
+  //<TextBox id="username" value="$rememberMe">
   final _v0_1_ = (_this_ = new TextBox())
-    ..id = '''username''';
+    ..id = '''username'''
+    ..value = rememberMe;
   _v0_.addChild(_v0_1_);
 
   //Password

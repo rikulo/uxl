@@ -7,11 +7,11 @@ void main() {
 }
 ?>
 
-<Template name="SignIn">
+<Template name="SignIn" args="rememberMe: ''">
   <Panel layout="type:linear; orient: vertical; spacing: 4"
     profile="location: center center; width: 180; height: 145">
     Username or Email
-    <TextBox id="username" />
+    <TextBox id="username" value="$rememberMe" />
     Password
     <TextBox id="password"/>
     <Button text="Sign in" profile="spacing: 12 4 4 4"/>
