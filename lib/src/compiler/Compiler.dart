@@ -37,7 +37,7 @@ class Compiler {
     } else if (node is ProcessingInstruction) {
       _doPI(node);
     } else if (node is Text) {
-      final text = node.value.trim();
+      final text = node.text.trim();
       if (!text.isEmpty)
         _newText(text);
     }

@@ -6,7 +6,7 @@ library rikulo_uxl_uc;
 
 import 'dart:io';
 import 'package:args/args.dart';
-import 'package:html5lib/parser.dart' show HtmlParser;
+import 'package:html5plus/parser.dart' show HtmlParser;
 import 'package:rikulo_uxl/compile.dart' show compile;
 
 const VERSION = "0.5.0";

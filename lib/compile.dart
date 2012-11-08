@@ -5,7 +5,7 @@
 library rikulo_uxl_compile;
 
 import 'dart:io';
-import 'package:html5lib/dom.dart';
+import 'package:html5plus/dom.dart';
 
 part "src/compiler/Compiler.dart";
 part "src/compiler/Util.dart";
