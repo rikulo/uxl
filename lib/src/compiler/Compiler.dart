@@ -127,8 +127,8 @@ class Compiler {
       desc = "Template, $name, for creating views.";
     args = args != null && !args.trim().isEmpty ? ", $args": "";
     _checkAttrs(elem, _templAllowed);
-    _writeln('''\n
-/** $desc */
+    _writeln('''
+\n/** $desc */
 List<View> $name({View parent$args}) {
   List<View> _vcr_ = new List();
   View _this_;''');
@@ -150,9 +150,9 @@ List<View> $name({View parent$args}) {
     final viewVar = _nextVar(),
       parentVar = _current.parentVar,
       pre = _current.pre;
-    _write("\n$pre//");
-    _writeTagComment(name, attrs);
-    _write("\n${pre}final $viewVar = $name(parent: ${parentVar!=null?parentVar:'parent'}");
+    _write('''
+\n$pre//${_toTagComment(name, attrs)}
+${pre}final $viewVar = $name(parent: ${parentVar!=null?parentVar:'parent'}''');
 
     for (final attr in attrs.keys) {
       if (attr.startsWith("data-")) {
@@ -184,22 +184,20 @@ List<View> $name({View parent$args}) {
    *
    *    new View()..attr = val..dataAttributes[attr] = val;
    */
-  void _newView(String name, Map<String, String> attrs, List<Node> children) {
+  void _newView(String name, Map<String, String> attrs, List<Node> children, [bool bText=false]) {
     final viewVar = _nextVar(),
       parentVar = _current.parentVar,
       pre = _current.pre;
 
     _write("\n$pre//");
-    var val;
-    if (name == "TextView" && (val = attrs[_PLAIN_TEXT]) != null) {
-      _write(val);
-    } else {
-      _writeTagComment(name, attrs);
-    }
-    _write("\n${pre}final $viewVar = (_this_ = new $name())");
+    _write(bText ? attrs["text"]: _toTagComment(name, attrs));
+    _write("\n${pre}final $viewVar = ");
+    if (!bText) _write("(_this_ = ");
+    _write("new $name()");
+    if (!bText) _write(")");
 
     for (final attr in attrs.keys) {
-      val = attrs[attr];
+      final val = attrs[attr];
       if (attr.startsWith("data-")) {
         _write('\n$pre  ..dataAttributes["${attr.substring(5)}"] = ${_unwrap(val)}');
       } else {
@@ -222,10 +220,8 @@ List<View> $name({View parent$args}) {
         //However, it depends on mirrors and UXL files might be compiled before
         //other dart files are ready. It is better to leave it to the users:
         //${foo.toString()} (if they have to convert it)
-          if (attr == _PLAIN_TEXT)
-            _write("\n$pre  ..text = '''$val'''");
-          else
-            _write('\n$pre  ..$attr = ${_unwrap(val)}');
+          _write("\n$pre  ..$attr = ");
+          _write(bText ? "'''$val'''": "${_unwrap(val)}");
           break;
         }
       }
@@ -257,7 +253,7 @@ ${pre}_vcr_.add($viewVar);''');
 
   //Handle Text
   void _newText(String text) {
-    _newView("TextView", {":": text}, []); //":" (_PLAIN_TEXT) to indicate no unwrapping
+    _newView("TextView", {"text": text}, [], true);
   }
 
   //Handle Apply
@@ -316,17 +312,15 @@ ${pre}_vcr_.add($viewVar);''');
       _write(str);
     _write("\n");
   }
-  void _writeTagComment(String name, Map<String, String> attrs)  {
+  String _toTagComment(String name, Map<String, String> attrs)  {
     final StringBuffer sb = new StringBuffer("<").add(name);
     for (final attr in attrs.keys) {
       final val = attrs[attr].replaceAll("\n", " ");
       sb.add(' $attr="${val}"');
-      if (sb.length > 78) {
-        _write("${sb.toString().substring(0, 75).trim()}...>");
-        return;
-      }
+      if (sb.length > 70)
+        return "${sb.toString().substring(0, 65).trim()}...>";
     }
-    _write("$sb>");
+    return "$sb>";
   }
 
   void _pushContext({OutputStream dest, String parentVar}) {
@@ -340,7 +334,6 @@ ${pre}_vcr_.add($viewVar);''');
     _current = _ctxes.isEmpty ? null: _ctxes.first;
   }
 }
-const _PLAIN_TEXT = ":"; //a special token for indicating it is a plain text
 
 class _Context {
   final _Context previous;

@@ -33,13 +33,11 @@ For more information, please refer to [Pub: Dependencies](http://pub.dartlang.or
 
 ##Usage
 
-At first, you have to prepare a UXL file defining the user interface. Then, run `uc` (UXL compiler) to compile it into the dart file with [command line interface](http://en.wikipedia.org/wiki/Command-line_interface):
+At first, you have to prepare a UXL file defining the user interface. Then, run `uc` (UXL compiler) to compile it into the dart file with [command line interface](http://en.wikipedia.org/wiki/Command-line_interface) as follows:
 
     dart bin/uc.dart your-uxl-file(s)
 
-A dart file is generated for each UXL file you gave. To generate a more readable file, you can specify the verbose option, `-v`:
-
-    dart bin/uc.dart -v your-uxl-file(s)
+A dart file is generated for each UXL file you gave.
 
 A UXL file can define one or multiple templates. For example, here is a UXL file defining a template called `ScrollViewTemplate`:
 

@@ -7,13 +7,12 @@ void main() {
   SignIn()[0].addToDocument();
 }
 
-
 /** Template, SignIn, for creating views. */
 List<View> SignIn({View parent}) {
   List<View> _vcr_ = new List();
   View _this_;
 
-  //<Panel layout="type:linear; orient: vertical; spacing: 4" profile="location...>
+  //<Panel layout="type:linear; orient: vertical; spacing: 4" profile...>
   final _v0_ = (_this_ = new Panel())
     ..layout.text = '''type:linear; orient: vertical; spacing: 4'''
     ..profile.text = '''location: center center; width: 180; height: 145''';
@@ -22,7 +21,7 @@ List<View> SignIn({View parent}) {
   _vcr_.add(_v0_);
 
   //Username or Email
-  final _v0_0_ = (_this_ = new TextView())
+  final _v0_0_ = new TextView()
     ..text = '''Username or Email''';
   _v0_.addChild(_v0_0_);
 
@@ -32,7 +31,7 @@ List<View> SignIn({View parent}) {
   _v0_.addChild(_v0_1_);
 
   //Password
-  final _v0_2_ = (_this_ = new TextView())
+  final _v0_2_ = new TextView()
     ..text = '''Password''';
   _v0_.addChild(_v0_2_);
 
