@@ -42,7 +42,7 @@ class Compiler {
       if (elem.tagName == "Template")
         _tmplDecls.add(_requiredAttr(elem, "name"));
       else if (topmost)
-        throw const CompileException("The root element must be <Template>");
+        throw new CompileException("${elem.lineNumber}: The root element must be <Template>.");
     } else if (node is ProcessingInstruction) {
       ProcessingInstruction pi = node;
       if (pi.target == "template" && !pi.data.isEmpty)
@@ -62,7 +62,7 @@ class Compiler {
     } else if (node is Text) {
       final text = node.text.trim();
       if (!text.isEmpty)
-        _newText(text);
+        _newText(node, text);
     }
   }
   void _doElement(Element elem) {
@@ -80,7 +80,7 @@ class Compiler {
     if (forEach != null) {
       if (forEach.isEmpty) {
         forEach = null;
-        _warning("The forEach attribute is empty");
+        _warning("${elem.lineNumber}: The forEach attribute is empty");
       } else {
         _writeln("\n${pre}for (var $forEach) {");
         _current.pre = pre = "$pre  ";
@@ -92,7 +92,7 @@ class Compiler {
     if (ifc != null) {
       if (ifc.isEmpty) {
         ifc = null;
-        _warning("The if attribute is empty");
+        _warning("${elem.lineNumber}: The if attribute is empty");
       } else {
         _writeln("\n${pre}if ($ifc) {");
         _current.pre = pre = "$pre  ";
@@ -103,11 +103,11 @@ class Compiler {
       _doApply(elem.nodes);
       _checkAttrs(elem, _applyAllowed);
     } else if (_tmplDecls.contains(name)) {
-      _newTempalte(name, attrs);
+      _newTempalte(elem, name, attrs);
       if (!elem.nodes.isEmpty)
-        _warning("$name is a template. It can't have child elements.");
+        _warning("${elem.lineNumber}: $name is a template. It can't have child elements.");
     } else {
-      _newView(name, attrs, elem.nodes);
+      _newView(elem, name, attrs);
     }
 
     if (ifc != null) {
@@ -124,13 +124,13 @@ class Compiler {
   void _doPI(ProcessingInstruction pi) {
     switch (pi.target) {
       case "dart":
-        _writeln("");
+        _writeln("\n//${pi.lineNumber}#");
         _writeln(pi.data);
         break;
       case "template":
         break; //handled by _scan
       default:
-        _warning("Unknown <? ${pi.target} ?>");
+        _warning("${pi.lineNumber}: Unknown <? ${pi.target} ?>");
     }
   }
 
@@ -141,7 +141,7 @@ class Compiler {
 
     final name = _requiredAttr(elem, "name");
     if (_tmplDefs.contains(name))
-      throw new CompileException("Duplicated template definition, $name");
+      throw new CompileException("${elem.lineNumber}: Duplicated template definition, $name");
     _tmplDefs.add(name);
     if (verbose)
       print("Generate template $name...");
@@ -154,7 +154,7 @@ class Compiler {
     _checkAttrs(elem, _templAllowed);
     _writeln('''
 \n/** $desc */
-List<View> $name({View parent$args}) {
+List<View> $name({View parent$args}) { //${elem.lineNumber}#
   List<View> _vcr_ = new List();
   View _this_;''');
 
@@ -171,17 +171,17 @@ List<View> $name({View parent$args}) {
    *
    *    Template(parent: parent, attr: val)..dataAttributes[attr] = val;
    */
-  void _newTempalte(String name, Map<String, String> attrs) {
+  void _newTempalte(Node node, String name, Map<String, String> attrs) {
     final viewVar = _nextVar(),
       parentVar = _current.parentVar,
       pre = _current.pre;
     _write('''
-\n$pre//${_toTagComment(name, attrs)}
+\n$pre//${node.lineNumber}# ${_toTagComment(name, attrs)}
 ${pre}final $viewVar = $name(parent: ${parentVar!=null?parentVar:'parent'}''');
 
     for (final attr in attrs.keys) {
       if (attr.startsWith("data-")) {
-        _warning("Data attributes, $attr, not allowed in a template, $name");
+        _warning("${node.lineNumber}: Data attributes, $attr, not allowed in a template, $name");
       } else {
         final val = attrs[attr];
         switch (attr) {
@@ -192,7 +192,7 @@ ${pre}final $viewVar = $name(parent: ${parentVar!=null?parentVar:'parent'}''');
         case "profile":
         case "style":
         case "class":
-          _warning("Template doesn't support $attr");
+          _warning("${node.lineNumber}: Template doesn't support $attr");
           break;
         default:
           _write(', $attr: ${_unwrap(val)}');
@@ -209,12 +209,14 @@ ${pre}final $viewVar = $name(parent: ${parentVar!=null?parentVar:'parent'}''');
    *
    *    new View()..attr = val..dataAttributes[attr] = val;
    */
-  void _newView(String name, Map<String, String> attrs, List<Node> children, [bool bText=false]) {
+  void _newView(Node node, String name, Map<String, String> attrs, [bool bText=false]) {
     final viewVar = _nextVar(),
       parentVar = _current.parentVar,
-      pre = _current.pre;
+      pre = _current.pre,
+      lineInfo = node.lineNumber != null ? "${node.lineNumber}# ": "";
+        //Text doesn't have line number
 
-    _write("\n$pre//");
+    _write("\n$pre//$lineInfo");
     _write(bText ? attrs["text"]: _toTagComment(name, attrs));
     _write("\n${pre}final $viewVar = ");
     if (!bText) _write("(_this_ = ");
@@ -262,14 +264,14 @@ $pre  parent.addChild($viewVar);
 ${pre}_vcr_.add($viewVar);''');
 
     _pushContext(parentVar: viewVar);
-    for (final node in children)
-      _do(node);
+    for (final n in node.nodes)
+      _do(n);
     _popContext();
 
     final control = attrs["control"];
     if (control != null) {
       if (control.isEmpty) {
-        _warning("The control attribute is empty");
+        _warning("${node.lineNumber}: The control attribute is empty");
       } else {
         _writeln("${pre}($control)($viewVar);");
       }
@@ -277,8 +279,8 @@ ${pre}_vcr_.add($viewVar);''');
   }
 
   //Handle Text
-  void _newText(String text) {
-    _newView("TextView", {"text": text}, [], true);
+  void _newText(Node node, String text) {
+    _newView(node, "TextView", {"text": text}, true);
   }
 
   //Handle Apply
@@ -291,13 +293,13 @@ ${pre}_vcr_.add($viewVar);''');
   String _requiredAttr(Element elem, String attr) {
     final val = elem.attributes[attr];
     if (val == null || val.isEmpty)
-      throw new CompileException("The $attr attribute is required");
+      throw new CompileException("${elem.lineNumber}: The $attr attribute is required");
     return val;
   }
   void _checkAttrs(Element elem, Set<String> allowedAttrs) {
     for (final attr in elem.attributes.keys)
       if (!allowedAttrs.contains(attr))
-        _warning("The $attr attribute not allowed in ${elem.tagName}");
+        _warning("${elem.lineNumber}: The $attr attribute not allowed in ${elem.tagName}");
   }
   static final Set<String> _templAllowed =
     new Set.from(const ["name", "args", "description"]);
