@@ -83,6 +83,10 @@ List<View> Inputs({View parent, friends, zoo}) {
       </ul>''';
   _v2_.addChild(_v2_1_);
   (MagicControl)(_v2_);
+
+  //<AnotherFood>
+  final _v3_ = AnotherFood(parent: parent);
+  _vcr_.addAll(_v3_);
   return _vcr_;
 }
 

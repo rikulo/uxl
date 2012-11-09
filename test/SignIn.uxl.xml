@@ -1,5 +1,4 @@
 <?dart
-
 import "package:rikulo/view.dart";
 
 void main() {

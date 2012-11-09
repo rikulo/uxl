@@ -37,6 +37,7 @@ description="A template to create a group of input views">
       </ul>">
     </TextView>
   </View>
+  <AnotherFood/>
 </Template>
 
 <Template name="AnotherFood" args="foods">
