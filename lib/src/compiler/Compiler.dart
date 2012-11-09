@@ -344,8 +344,8 @@ ${pre}_vcr_.add($viewVar);''');
     for (final attr in attrs.keys) {
       final val = attrs[attr].replaceAll("\n", " ");
       sb.add(' $attr="${val}"');
-      if (sb.length > 70)
-        return "${sb.toString().substring(0, 65).trim()}...>";
+      if (sb.length > 45)
+        return "${sb.toString().substring(0, 40).trim()}...>";
     }
     return "$sb>";
   }
