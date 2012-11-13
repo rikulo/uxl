@@ -217,7 +217,7 @@ ${pre}final $viewVar = $name(parent: ${parentVar!=null?parentVar:'parent'}''');
         //Text doesn't have line number
 
     _write("\n$pre//$lineInfo");
-    _write(bText ? attrs["text"]: _toTagComment(name, attrs));
+    _write(bText ? _toComment(attrs["text"]): _toTagComment(name, attrs));
     _write("\n${pre}final $viewVar = ");
     if (!bText) _write("(_this_ = ");
     _write("new $name()");
@@ -342,12 +342,16 @@ ${pre}_vcr_.add($viewVar);''');
   String _toTagComment(String name, Map<String, String> attrs)  {
     final StringBuffer sb = new StringBuffer("<").add(name);
     for (final attr in attrs.keys) {
-      final val = attrs[attr].replaceAll("\n", " ");
+      final val = attrs[attr].replaceAll("\n", "\\n");
       sb.add(' $attr="${val}"');
       if (sb.length > 45)
         return "${sb.toString().substring(0, 40).trim()}...>";
     }
     return "$sb>";
+  }
+  String _toComment(String text) {
+    text = text.replaceAll("\n", "\\n");
+    return text.length > 30 ? "${text.substring(0, 27)}...": text;
   }
 
   void _pushContext({OutputStream dest, String parentVar}) {
