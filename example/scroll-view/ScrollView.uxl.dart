@@ -3,22 +3,22 @@
 
 /** Template, ScrollViewTemplate, for creating views. */
 List<View> ScrollViewTemplate({View parent, rows: 30, cols: 30}) { //3#
-  List<View> _vcr_ = new List();
+  List<View> _vr_ = new List();
   View _this_;
 
-  //4# <ScrollView class="scroll-view" profile="location: center center;...>
+  //4# <ScrollView class="scroll-view" prof...>
   final _v0_ = (_this_ = new ScrollView())
     ..classes.add("scroll-view")
     ..profile.text = '''location: center center; width: 80%; height: 80%''';
   if (parent != null)
     parent.addChild(_v0_);
-  _vcr_.add(_v0_);
+  _vr_.add(_v0_);
 
   for (var r = 0; r < rows; ++r) {
 
     for (var c = 0; c < cols; ++c) {
 
-      //8# <View style="border: 1px solid #553; background-color: ${CSS.colo...>
+      //8# <View style="border: 1px solid #553;...>
       final _v0_0_ = (_this_ = new View())
         ..style.cssText = '''border: 1px solid #553; background-color: ${CSS.color(250 - r * 4, 250 - c * 4, 200)}'''
         ..left = r * 50 + 2
@@ -28,5 +28,5 @@ List<View> ScrollViewTemplate({View parent, rows: 30, cols: 30}) { //3#
       _v0_.addChild(_v0_0_);
     }
   }
-  return _vcr_;
+  return _vr_;
 }

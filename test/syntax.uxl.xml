@@ -21,11 +21,11 @@ description="A template to create a group of input views">
     </View>
   </View>
 
-  <ListView model="${friends}" data-detail="${InputDetail}" data-header="${InputHeader}"/>
   <Template name="InputDetail" args="each">
     <ListHead label="${each.name}" image="${each.photo}"/>
     <InputHead label="${each.description}"/>
   </Template>
+  <ListView model="${friends}" data-detail="${InputDetail}" data-header="${InputHeader}"/>
 
   <View layout="type: linear; orient: vertical" control="MagicControl">
     <MagicBox owner="${animal}" forEach="animal in zoo.animals"/>

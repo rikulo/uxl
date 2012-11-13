@@ -1,4 +1,5 @@
 //Sample Code: ScrollView with EL
+library ScrollViewDemo;
 
 import 'package:rikulo/view.dart';
 import 'package:rikulo/html.dart';

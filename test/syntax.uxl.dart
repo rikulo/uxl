@@ -8,23 +8,23 @@ import 'package:rikulo/view.dart';
 
 /** A template to create a group of input views */
 List<View> Inputs({View parent, friends, zoo}) { //12#
-  List<View> _vcr_ = new List();
+  List<View> _vr_ = new List();
   View _this_;
 
-  //14# <View layout="type: linear; orient: vertical" style="border: 2px...>
+  //14# <View layout="type: linear; orient:...>
   final _v0_ = (_this_ = new View())
     ..layout.text = '''type: linear; orient: vertical'''
     ..style.cssText = '''border: 2px solid #333''';
   if (parent != null)
     parent.addChild(_v0_);
-  _vcr_.add(_v0_);
+  _vr_.add(_v0_);
 
   //15# <InputHead label="Form">
   final _v0_0_ = InputHead(parent: _v0_, label: '''Form''');
 
   for (var each in ['text', 'password', 'multiline', 'number', 'date', 'color']) {
 
-    //16# <View forEach="each in ['text', 'password', 'multiline', 'number'...>
+    //16# <View forEach="each in ['text', 'pas...>
     final _v0_1_ = (_this_ = new View())
       ..layout.text = '''type: linear; align: center; spacing: 0 3'''
       ..classes.add("foo1")
@@ -38,7 +38,7 @@ List<View> Inputs({View parent, friends, zoo}) { //12#
 
     if (each != 'multiline') {
 
-      //19# <TextBox type="$each" if="each != 'multiline'">
+      //19# <TextBox type="$each" if="each != 'm...>
       final _v0_1_1_ = (_this_ = new TextBox())
         ..type = each;
       _v0_1_.addChild(_v0_1_1_);
@@ -52,29 +52,48 @@ List<View> Inputs({View parent, friends, zoo}) { //12#
     }
   }
 
-  //24# <ListView model="${friends}" data-detail="${InputDetail}" data-he...>
+  /** Template, InputDetail, for creating views. */
+  List<View> InputDetail({View parent, each}) { //24#
+    List<View> _vr0 = new List();
+    View _this_;
+
+    //25# <ListHead label="${each.name}" image...>
+    final _v0_ = (_this_ = new ListHead())
+      ..label = each.name
+      ..image = each.photo;
+    if (parent != null)
+      parent.addChild(_v0_);
+    _vr0.add(_v0_);
+
+    //26# <InputHead label="${each.description}">
+    final _v1_ = InputHead(parent: parent, label: each.description);
+    _vr0.addAll(_v1_);
+    return _vr0;
+  }
+
+  //28# <ListView model="${friends}" data-de...>
   final _v1_ = (_this_ = new ListView())
     ..model = friends
     ..dataAttributes["detail"] = InputDetail
     ..dataAttributes["header"] = InputHeader;
   if (parent != null)
     parent.addChild(_v1_);
-  _vcr_.add(_v1_);
+  _vr_.add(_v1_);
 
-  //30# <View layout="type: linear; orient: vertical" control="MagicControl">
+  //30# <View layout="type: linear; orient:...>
   final _v2_ = (_this_ = new View())
     ..layout.text = '''type: linear; orient: vertical''';
   if (parent != null)
     parent.addChild(_v2_);
-  _vcr_.add(_v2_);
+  _vr_.add(_v2_);
 
   for (var animal in zoo.animals) {
 
-    //31# <MagicBox owner="${animal}" forEach="animal in zoo.animals">
+    //31# <MagicBox owner="${animal}" forEach=...>
     final _v2_0_ = MagicBox(parent: _v2_, owner: animal);
   }
 
-  //32# <TextView html="       ${friends[0]}       <ul>         <li>abc</...>
+  //32# <TextView html="\n      ${friends[0]...>
   final _v2_1_ = (_this_ = new TextView())
     ..html = '''
       ${friends[0]}
@@ -87,13 +106,13 @@ List<View> Inputs({View parent, friends, zoo}) { //12#
 
   //40# <AnotherFood>
   final _v3_ = AnotherFood(parent: parent);
-  _vcr_.addAll(_v3_);
-  return _vcr_;
+  _vr_.addAll(_v3_);
+  return _vr_;
 }
 
 /** Template, AnotherFood, for creating views. */
 List<View> AnotherFood({View parent, foods}) { //43#
-  List<View> _vcr_ = new List();
+  List<View> _vr_ = new List();
   View _this_;
 
   for (var each in foods) {
@@ -103,7 +122,7 @@ List<View> AnotherFood({View parent, foods}) { //43#
       ..text = '''$each is found.''';
     if (parent != null)
       parent.addChild(_v0_);
-    _vcr_.add(_v0_);
+    _vr_.add(_v0_);
 
     if (each == 'orange') {
 
@@ -112,7 +131,7 @@ List<View> AnotherFood({View parent, foods}) { //43#
         ..classes.add("hilite");
       if (parent != null)
         parent.addChild(_v1_);
-      _vcr_.add(_v1_);
+      _vr_.add(_v1_);
 
       //This is nice.
       final _v1_0_ = new TextView()
@@ -125,9 +144,9 @@ List<View> AnotherFood({View parent, foods}) { //43#
       ..text = '''More and more to come.''';
     if (parent != null)
       parent.addChild(_v2_);
-    _vcr_.add(_v2_);
+    _vr_.add(_v2_);
   }
-  return _vcr_;
+  return _vr_;
 }
 
 //53#
@@ -145,23 +164,4 @@ class ListHead extends View {
   String image;
 }
 void MagicControl(View view) {
-}
-
-/** Template, InputDetail, for creating views. */
-List<View> InputDetail({View parent, each}) { //25#
-  List<View> _vcr_ = new List();
-  View _this_;
-
-  //26# <ListHead label="${each.name}" image="${each.photo}">
-  final _v0_ = (_this_ = new ListHead())
-    ..label = each.name
-    ..image = each.photo;
-  if (parent != null)
-    parent.addChild(_v0_);
-  _vcr_.add(_v0_);
-
-  //27# <InputHead label="${each.description}">
-  final _v1_ = InputHead(parent: parent, label: each.description);
-  _vcr_.addAll(_v1_);
-  return _vcr_;
 }
