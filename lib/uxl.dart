@@ -4,7 +4,8 @@
 library rikulo_uxl;
 
 import "package:rikulo/view.dart";
-import "package:rikulo/event.dart";
+import "package:rikulo/event.dart" show ViewEvent;
+import "package:rikulo/layout.dart" show layoutManager;
 
 typedef List<View> ControlTemplate({View parent});
 
@@ -51,8 +52,7 @@ class Control {
 
       if (parentNode != null)
         view.addToDocument(ref: nextNode != null ? nextNode: parentNode,
-          mode: nextNode != null ? "before": "child",
-          layout: true/*force immediate layout for better responsive*/);
+          mode: nextNode != null ? "before": "child");
     } else {
       final next = view.nextSibling;
 
@@ -60,10 +60,11 @@ class Control {
       view = template()[0];
 
       parent.addChild(view, next);
-      parent.requestLayout(true); //immediate for better responsive
+      parent.requestLayout();
     }
 
     onRender();
+    layoutManager.flush(); //immediate for better responsive
   }
 
   /** Called after a command is received.

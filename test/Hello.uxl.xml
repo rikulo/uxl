@@ -4,8 +4,8 @@ import "package:rikulo/view.dart";
 import "package:rikulo_uxl/uxl.dart";
 
 void main() {
-  Hello()[0]..addToDocument();
-  //new View()..addChild(Hello()[0])..addToDocument();
+  //Hello()[0]..addToDocument();
+  new View()..addChild(Hello()[0])..addToDocument();
 }
 
 class HelloControl extends Control {
@@ -22,11 +22,10 @@ const messages = const ['great', 'wicked cool', 'sweet', 'fantastic'];
 ?>
 
 <Template name="Hello">
-  <Panel layout="type:linear; orient: vertical; spacing: 4"
-    profile="location: center center; width: 125; height: 80"
+  <Panel layout="type:linear; orient: vertical; spacing: 8 4"
+    profile="location: center center; width: 130; height: 80"
     control="ctrl: HelloControl">
     UXL is ${ctrl.message}!
-    <Button text="Change" profile="spacing: 12 4 4 4"
-      on.click="change"/>
+    <Button text="Change" on.click="change"/>
   </Panel>
 </Template>
