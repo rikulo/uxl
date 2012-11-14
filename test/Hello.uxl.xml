@@ -1,0 +1,32 @@
+<?dart
+import "dart:math";
+import "package:rikulo/view.dart";
+import "package:rikulo_uxl/uxl.dart";
+
+void main() {
+  Hello()[0]..addToDocument();
+  //new View()..addChild(Hello()[0])..addToDocument();
+}
+
+class HelloControl extends Control {
+  String message = messages[0];
+
+  void change(e) {
+    message = nextMessage();
+  }
+}
+
+String nextMessage() => messages[random.nextInt(4)];
+final Random random = new Random();
+const messages = const ['great', 'wicked cool', 'sweet', 'fantastic'];  
+?>
+
+<Template name="Hello">
+  <Panel layout="type:linear; orient: vertical; spacing: 4"
+    profile="location: center center; width: 125; height: 80"
+    control="ctrl: HelloControl">
+    UXL is ${ctrl.message}!
+    <Button text="Change" profile="spacing: 12 4 4 4"
+      on.click="change"/>
+  </Panel>
+</Template>

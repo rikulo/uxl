@@ -1,0 +1,18 @@
+<?dart
+import "package:rikulo/view.dart";
+
+class A {
+	String foo;
+}
+class TestView extends View {
+	A get a => null;
+}
+?>
+
+<Template name="foo">
+	<TextView/>
+	<TestView a.foo="a & < b"></Second>
+  <![CDATA[& in CDATA]]>
+  Test2 & < another2
+  <Button/>
+</Template>
