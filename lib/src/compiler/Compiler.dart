@@ -11,12 +11,10 @@ class Compiler {
   final OutputStream destination;
   final Encoding encoding;
   final bool verbose;
-  _Context _current;
+  _TemplateInfo _current;
   //used for indent
   String _pre = "";
-  //used for naming the returned list of inner templates
-  int _vrId = 0;
-  final Queue<_Context> _ctxes = new Queue();
+  final Queue<_TemplateInfo> _tmplInfos = new Queue();
   //declared template names
   final Set<String> _tmplDecls = new Set();
   //defined template names
@@ -126,7 +124,7 @@ class Compiler {
 
   //Handles the definition of a template
   void _defineTemplate(Element elem) {
-    _pushContext();
+    _startTemplate();
 
     final name = _requiredAttr(elem, "name");
     if (_tmplDefs.contains(name))
@@ -153,7 +151,7 @@ $_pre  View _this_;''');
     _undent();
 
     _writeln("$_pre  return ${_current.listVar};\n$_pre}");
-    _popContext();
+    _endTemplate();
   }
 
   /** Handles the instantiation of a template.
@@ -161,8 +159,8 @@ $_pre  View _this_;''');
    *    Template(parent: parent, attr: val)..dataAttributes[attr] = val;
    */
   void _newTempalte(Node node, String name, Map<String, String> attrs) {
-    final viewVar = _nextVar(),
-      parentVar = _current.parentVar;
+    final vi = _current.startView(),
+      viewVar = vi.name, parentVar = vi.parent;
     _write('''
 \n$_pre//${node.lineNumber}# ${_toTagComment(name, attrs)}
 ${_pre}final $viewVar = $name(parent: ${parentVar!=null?parentVar:'parent'}''');
@@ -192,14 +190,16 @@ ${_pre}final $viewVar = $name(parent: ${parentVar!=null?parentVar:'parent'}''');
     _writeln(");");
     if (parentVar == null)
       _writeln("${_pre}${_current.listVar}.addAll($viewVar);");
+
+    _current.endView();
   }
   /** Handles the instantiation of a view.
    *
    *    new View()..attr = val..dataAttributes[attr] = val;
    */
   void _newView(Node node, String name, Map<String, String> attrs, [bool bText=false]) {
-    final viewVar = _nextVar(),
-      parentVar = _current.parentVar,
+    final vi = _current.startView(),
+      viewVar = vi.name, parentVar = vi.parent,
       lineInfo = node.lineNumber != null ? "${node.lineNumber}# ": "";
         //Text doesn't have line number
 
@@ -250,10 +250,8 @@ ${_pre}if (parent != null)
 $_pre  parent.addChild($viewVar);
 ${_pre}${_current.listVar}.add($viewVar);''');
 
-    _pushContext(parentVar: viewVar);
     for (final n in node.nodes)
       _do(n);
-    _popContext();
 
     final control = attrs["control"];
     if (control != null) {
@@ -263,6 +261,8 @@ ${_pre}${_current.listVar}.add($viewVar);''');
         _writeln("${_pre}($control)($viewVar);");
       }
     }
+
+    _current.endView();
   }
 
   //Handle Text
@@ -319,10 +319,6 @@ ${_pre}${_current.listVar}.add($viewVar);''');
     return "'''$val'''";
   }
 
-  String _nextVar()
-  => "${_current.parentVar != null ? _current.parentVar: '_v'}${_current.nextId++}_";
-  ///Returns the variable name for the return list
-
   void _write(String str) {
     destination.writeString(str, encoding);
   }
@@ -348,28 +344,57 @@ ${_pre}${_current.listVar}.add($viewVar);''');
 
   //parentVar is null => a new template
   //parentVar is not null => a new indent (for child views)
-  void _pushContext({String parentVar}) {
-    _ctxes.addFirst(
-      new _Context(parentVar,
-        parentVar != null ? //create new views (or new template)
-          _current.listVar: //no change
-          _pre.isEmpty ? "_vr_": "_vr${_vrId++}_"));
-    _current = _ctxes.first;
+  void _startTemplate() {
+    _tmplInfos.addFirst(_current = new _TemplateInfo(_current));
   }
-  void _popContext() {
-    _ctxes.removeFirst();
-    _current = _ctxes.isEmpty ? null: _ctxes.first;
+  void _endTemplate() {
+    _tmplInfos.removeFirst();
+    _current = _tmplInfos.isEmpty ? null: _tmplInfos.first;
   }
 }
 
-class _Context {
-  ///Variable name referencing to parent
-  final parentVar;
+class _VarInfo {
+  final String name;
+  final String parent;
+  int _nextId = 0;
+
+  _VarInfo(_VarInfo prev, this.name): parent = prev != null ? prev.name: null;
+}
+class _TemplateInfo {
   ///Variable name referencing to the return list
   final listVar;
-  int nextId = 0;
+  ///An ID represents the depth of this template info
+  final String depth;
+  final Queue<VarInfo> varInfos = new Queue();
+  int _nextId = 0;
 
-  _Context(this.parentVar, this.listVar);
+  factory _TemplateInfo(_TemplateInfo prev) {
+    var depth, listVar;
+    if (prev == null) {
+      depth = "";
+      listVar = "_rv";
+    } else {
+      depth = prev.depth;
+      depth = depth.isEmpty ? "a": depth == "z" ? "A":
+        new String.fromCharCodes([depth.charCodeAt(0) + 1]);
+        //assume at most 1+26+26 depth
+      listVar = "_rv${depth}";
+    }
+    return new _TemplateInfo._(depth, listVar);
+  }
+  _TemplateInfo._(this.depth, this.listVar);
+
+  _VarInfo startView() {
+    final prev = varInfos.isEmpty ? null: varInfos.first,
+      id = prev != null ? prev._nextId++: _nextId++,
+      prefix = prev != null ? "${prev.name}_": "_v$depth";
+    _VarInfo vi = new _VarInfo(prev, "$prefix$id");
+    varInfos.addFirst(vi);
+    return vi;
+  }
+  void endView() {
+    varInfos.removeFirst();
+  }
 }
 
 ///show warning messages

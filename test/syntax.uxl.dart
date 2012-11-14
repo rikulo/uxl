@@ -8,145 +8,145 @@ import 'package:rikulo/view.dart';
 
 /** A template to create a group of input views */
 List<View> Inputs({View parent, friends, zoo}) { //12#
-  List<View> _vr_ = new List();
+  List<View> _rv = new List();
   View _this_;
 
   //14# <View layout="type: linear; orient:...>
-  final _v0_ = (_this_ = new View())
+  final _v0 = (_this_ = new View())
     ..layout.text = '''type: linear; orient: vertical'''
     ..style.cssText = '''border: 2px solid #333''';
   if (parent != null)
-    parent.addChild(_v0_);
-  _vr_.add(_v0_);
+    parent.addChild(_v0);
+  _rv.add(_v0);
 
   //15# <InputHead label="Form">
-  final _v0_0_ = InputHead(parent: _v0_, label: '''Form''');
+  final _v0_0 = InputHead(parent: _v0, label: '''Form''');
 
   for (var each in ['text', 'password', 'multiline', 'number', 'date', 'color']) {
 
     //16# <View forEach="each in ['text', 'pas...>
-    final _v0_1_ = (_this_ = new View())
+    final _v0_1 = (_this_ = new View())
       ..layout.text = '''type: linear; align: center; spacing: 0 3'''
       ..classes.add("foo1")
       ..classes.add("foo2");
-    _v0_.addChild(_v0_1_);
+    _v0.addChild(_v0_1);
 
     //${each}
-    final _v0_1_0_ = new TextView()
+    final _v0_1_0 = new TextView()
       ..text = '''${each}''';
-    _v0_1_.addChild(_v0_1_0_);
+    _v0_1.addChild(_v0_1_0);
 
     if (each != 'multiline') {
 
       //19# <TextBox type="$each" if="each != 'm...>
-      final _v0_1_1_ = (_this_ = new TextBox())
+      final _v0_1_1 = (_this_ = new TextBox())
         ..type = each;
-      _v0_1_.addChild(_v0_1_1_);
+      _v0_1.addChild(_v0_1_1);
     }
 
     if (each == 'multiline') {
 
       //20# <MultilineBox if="each == 'multiline'">
-      final _v0_1_2_ = (_this_ = new MultilineBox());
-      _v0_1_.addChild(_v0_1_2_);
+      final _v0_1_2 = (_this_ = new MultilineBox());
+      _v0_1.addChild(_v0_1_2);
     }
   }
 
   /** Template, InputDetail, for creating views. */
   List<View> InputDetail({View parent, each}) { //24#
-    List<View> _vr0 = new List();
+    List<View> _rva = new List();
     View _this_;
 
     //25# <ListHead label="${each.name}" image...>
-    final _v0_ = (_this_ = new ListHead())
+    final _va0 = (_this_ = new ListHead())
       ..label = each.name
       ..image = each.photo;
     if (parent != null)
-      parent.addChild(_v0_);
-    _vr0.add(_v0_);
+      parent.addChild(_va0);
+    _rva.add(_va0);
 
     //26# <InputHead label="${each.description}">
-    final _v1_ = InputHead(parent: parent, label: each.description);
-    _vr0.addAll(_v1_);
-    return _vr0;
+    final _va1 = InputHead(parent: parent, label: each.description);
+    _rva.addAll(_va1);
+    return _rva;
   }
 
   //28# <ListView model="${friends}" data-de...>
-  final _v1_ = (_this_ = new ListView())
+  final _v1 = (_this_ = new ListView())
     ..model = friends
     ..dataAttributes["detail"] = InputDetail
     ..dataAttributes["header"] = InputHeader;
   if (parent != null)
-    parent.addChild(_v1_);
-  _vr_.add(_v1_);
+    parent.addChild(_v1);
+  _rv.add(_v1);
 
   //30# <View layout="type: linear; orient:...>
-  final _v2_ = (_this_ = new View())
+  final _v2 = (_this_ = new View())
     ..layout.text = '''type: linear; orient: vertical''';
   if (parent != null)
-    parent.addChild(_v2_);
-  _vr_.add(_v2_);
+    parent.addChild(_v2);
+  _rv.add(_v2);
 
   for (var animal in zoo.animals) {
 
     //31# <MagicBox owner="${animal}" forEach=...>
-    final _v2_0_ = MagicBox(parent: _v2_, owner: animal);
+    final _v2_0 = MagicBox(parent: _v2, owner: animal);
   }
 
   //32# <TextView html="\n      ${friends[0]...>
-  final _v2_1_ = (_this_ = new TextView())
+  final _v2_1 = (_this_ = new TextView())
     ..html = '''
       ${friends[0]}
       <ul>
         <li>abc</li>
         <li>xyz</li>
       </ul>''';
-  _v2_.addChild(_v2_1_);
-  (MagicControl)(_v2_);
+  _v2.addChild(_v2_1);
+  (MagicControl)(_v2);
 
   //40# <AnotherFood>
-  final _v3_ = AnotherFood(parent: parent);
-  _vr_.addAll(_v3_);
-  return _vr_;
+  final _v3 = AnotherFood(parent: parent);
+  _rv.addAll(_v3);
+  return _rv;
 }
 
 /** Template, AnotherFood, for creating views. */
 List<View> AnotherFood({View parent, foods}) { //43#
-  List<View> _vr_ = new List();
+  List<View> _rv = new List();
   View _this_;
 
   for (var each in foods) {
 
     //$each is found.
-    final _v0_ = new TextView()
+    final _v0 = new TextView()
       ..text = '''$each is found.''';
     if (parent != null)
-      parent.addChild(_v0_);
-    _vr_.add(_v0_);
+      parent.addChild(_v0);
+    _rv.add(_v0);
 
     if (each == 'orange') {
 
       //47# <View class="hilite">
-      final _v1_ = (_this_ = new View())
+      final _v1 = (_this_ = new View())
         ..classes.add("hilite");
       if (parent != null)
-        parent.addChild(_v1_);
-      _vr_.add(_v1_);
+        parent.addChild(_v1);
+      _rv.add(_v1);
 
       //This is nice.
-      final _v1_0_ = new TextView()
+      final _v1_0 = new TextView()
         ..text = '''This is nice.''';
-      _v1_.addChild(_v1_0_);
+      _v1.addChild(_v1_0);
     }
 
     //More and more to come.
-    final _v2_ = new TextView()
+    final _v2 = new TextView()
       ..text = '''More and more to come.''';
     if (parent != null)
-      parent.addChild(_v2_);
-    _vr_.add(_v2_);
+      parent.addChild(_v2);
+    _rv.add(_v2);
   }
-  return _vr_;
+  return _rv;
 }
 
 //53#

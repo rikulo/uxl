@@ -10,42 +10,42 @@ void main() {
 
 /** Template, SignIn, for creating views. */
 List<View> SignIn({View parent, rememberMe: ''}) { //9#
-  List<View> _vr_ = new List();
+  List<View> _rv = new List();
   View _this_;
 
   //10# <Panel layout="type:linear; orient:...>
-  final _v0_ = (_this_ = new Panel())
+  final _v0 = (_this_ = new Panel())
     ..layout.text = '''type:linear; orient: vertical; spacing: 4'''
     ..profile.text = '''location: center center; width: 180; height: 145''';
   if (parent != null)
-    parent.addChild(_v0_);
-  _vr_.add(_v0_);
+    parent.addChild(_v0);
+  _rv.add(_v0);
 
   //Username or Email
-  final _v0_0_ = new TextView()
+  final _v0_0 = new TextView()
     ..text = '''Username or Email''';
-  _v0_.addChild(_v0_0_);
+  _v0.addChild(_v0_0);
 
   //13# <TextBox id="username" value="$remem...>
-  final _v0_1_ = (_this_ = new TextBox())
+  final _v0_1 = (_this_ = new TextBox())
     ..id = '''username'''
     ..value = rememberMe;
-  _v0_.addChild(_v0_1_);
+  _v0.addChild(_v0_1);
 
   //Password
-  final _v0_2_ = new TextView()
+  final _v0_2 = new TextView()
     ..text = '''Password''';
-  _v0_.addChild(_v0_2_);
+  _v0.addChild(_v0_2);
 
   //15# <TextBox id="password">
-  final _v0_3_ = (_this_ = new TextBox())
+  final _v0_3 = (_this_ = new TextBox())
     ..id = '''password''';
-  _v0_.addChild(_v0_3_);
+  _v0.addChild(_v0_3);
 
   //16# <Button text="Sign in" profile="spac...>
-  final _v0_4_ = (_this_ = new Button())
+  final _v0_4 = (_this_ = new Button())
     ..text = '''Sign in'''
     ..profile.text = '''spacing: 12 4 4 4''';
-  _v0_.addChild(_v0_4_);
-  return _vr_;
+  _v0.addChild(_v0_4);
+  return _rv;
 }
