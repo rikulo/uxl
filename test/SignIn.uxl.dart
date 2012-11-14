@@ -10,8 +10,7 @@ void main() {
 
 /** Template, SignIn, for creating views. */
 List<View> SignIn({View parent, rememberMe: ''}) { //9#
-  List<View> _rv = new List();
-  View _this_;
+  List<View> _rv = new List(); View _this_;
 
   //10# <Panel layout="type:linear; orient:...>
   final _v0 = (_this_ = new Panel())

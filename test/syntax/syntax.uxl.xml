@@ -5,6 +5,7 @@
 library foo;
 
 import 'package:rikulo/view.dart';
+import 'package:rikulo_uxl/uxl.dart';
 ?>
 
 <? template InputHead MagicBox ?>
@@ -64,6 +65,8 @@ class ListHead extends View {
   String label;
   String image;
 }
-void MagicControl(View view) {
+
+class MagicControl extends Control {
+  
 }
 ?>

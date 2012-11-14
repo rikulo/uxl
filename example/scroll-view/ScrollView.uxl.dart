@@ -3,8 +3,7 @@
 
 /** Template, ScrollViewTemplate, for creating views. */
 List<View> ScrollViewTemplate({View parent, rows: 30, cols: 30}) { //3#
-  List<View> _rv = new List();
-  View _this_;
+  List<View> _rv = new List(); View _this_;
 
   //4# <ScrollView class="scroll-view" prof...>
   final _v0 = (_this_ = new ScrollView())

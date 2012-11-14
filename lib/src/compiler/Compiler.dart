@@ -139,19 +139,25 @@ class Compiler {
       desc = "Template, $name, for creating views.";
     args = args != null && !args.trim().isEmpty ? ", $args": "";
     _checkAttrs(elem, _templAllowed);
-    _writeln('''
-\n$_pre/** $desc */
-${_pre}List<View> $name({View parent$args}) { //${elem.lineNumber}#
-$_pre  List<View> ${_current.listVar} = new List();
-$_pre  View _this_;''');
+
+    _writeln("\n$_pre/** $desc */");
+    _outBeginTempl(name, args, elem.lineNumber);
 
     _indent();
     for (final node in elem.nodes)
       _do(node);
     _undent();
 
-    _writeln("$_pre  return ${_current.listVar};\n$_pre}");
+    _outEndTempl();
     _endTemplate();
+  }
+  void _outBeginTempl(String name, String args, int lineNumber) {
+    _writeln('''
+${_pre}List<View> $name({View parent$args}) { //$lineNumber#
+$_pre  List<View> ${_current.listVar} = new List(); View _this_;''');
+  }
+  void _outEndTempl() {
+    _writeln("$_pre  return ${_current.listVar};\n$_pre}");
   }
 
   /** Handles the instantiation of a template.
@@ -159,31 +165,31 @@ $_pre  View _this_;''');
    *    Template(parent: parent, attr: val)..dataAttributes[attr] = val;
    */
   void _newTempalte(Node node, String name, Map<String, String> attrs) {
-    final vi = _current.startView(),
-      viewVar = vi.name, parentVar = vi.parent;
+    final vi = _current.startView(), viewVar = vi.name, parentVar = vi.parent;
     _write('''
 \n$_pre//${node.lineNumber}# ${_toTagComment(name, attrs)}
 ${_pre}final $viewVar = $name(parent: ${parentVar!=null?parentVar:'parent'}''');
 
     for (final attr in attrs.keys) {
-      if (attr.startsWith("data-")) {
-        _warning("${node.lineNumber}: Data attributes, $attr, not allowed in a template, $name");
-      } else {
-        final val = attrs[attr];
-        switch (attr) {
-        case "forEach": case "if":
-          break; //ignore
-        case "control": //not allowed in template
-        case "layout":
-        case "profile":
-        case "style":
-        case "class":
-          _warning("${node.lineNumber}: Template doesn't support $attr");
-          break;
-        default:
-          _write(', $attr: ${_unwrap(val)}');
-          break;
+      if (attr != "forEach" && attr != "if") {
+        bool error = false;
+        switch (attr) { //check if allowed in template
+          case "control":
+          case "layout":
+          case "profile":
+          case "style":
+          case "class":
+            error = true;
+            break;
+          default:
+            error = attr.startsWith("data-") || attr.startsWith("on.");
+            break;
         }
+
+        if (error)
+          _warning("${node.lineNumber}: Template doesn't support $attr");
+        else
+          _write(', $attr: ${_unwrap(attrs[attr])}');
       }
     }
 
@@ -198,10 +204,39 @@ ${_pre}final $viewVar = $name(parent: ${parentVar!=null?parentVar:'parent'}''');
    *    new View()..attr = val..dataAttributes[attr] = val;
    */
   void _newView(Node node, String name, Map<String, String> attrs, [bool bText=false]) {
-    final vi = _current.startView(),
-      viewVar = vi.name, parentVar = vi.parent,
-      lineInfo = node.lineNumber != null ? "${node.lineNumber}# ": "";
-        //Text doesn't have line number
+    final lineInfo = node.lineNumber != null ? "${node.lineNumber}# ": "";
+        //Note: Text doesn't have line number
+
+    var control = attrs["control"], ctrlName, ctrlVar, ctrlTempl;
+    if (control != null) {
+      if ((control = control.trim()).isEmpty) {
+        control = null;
+        _warning("${node.lineNumber}: The control attribute is empty");
+      } else {
+        final i = control.indexOf(':');
+        if (i >= 0) {
+          var s = control.substring(0, i).trim();
+          if (_isValidId(s)) {
+            ctrlName = s;
+            control = control.substring(i + 1).trim();
+          }
+        }
+
+        ctrlVar = _current.startCtrl();
+        ctrlTempl = "${ctrlVar}T";
+        _write("\n${_pre}final $ctrlVar = ");
+        _write(_isValidId(control) ? "new $control()": control);
+        _writeln(";");
+        if (ctrlName != null)
+          _writeln("final $ctrlName = $ctrlVar;");
+
+        _startTemplate();
+        _outBeginTempl(ctrlTempl, "", node.lineNumber);
+        _indent();
+      }
+    }
+
+    var vi = _current.startView(), viewVar = vi.name, parentVar = vi.parent;
 
     _write("\n$_pre//$lineInfo");
     _write(bText ? _toComment(attrs["text"]): _toTagComment(name, attrs));
@@ -211,9 +246,36 @@ ${_pre}final $viewVar = $name(parent: ${parentVar!=null?parentVar:'parent'}''');
     if (!bText) _write(")");
 
     for (final attr in attrs.keys) {
-      final val = attrs[attr];
+      String val = attrs[attr];
       if (attr.startsWith("data-")) {
         _write('\n$_pre  ..dataAttributes["${attr.substring(5)}"] = ${_unwrap(val)}');
+      } else if (attr.startsWith("on.")) { //action
+        final action = attr.substring(3);
+        if (!_isValidId(action))
+          throw new CompileException("${node.lineNumber}: illegal action name, $attr");
+
+        String name;
+        final i = val.indexOf('.');
+        if (i >= 0) {
+          name = val.substring(0, i).trim();
+          if (!_isValidId(name))
+            throw new CompileException("${node.lineNumber}: illegal action, $val");
+          val = val.substring(i + 1);
+        }
+
+        if (!_isValidId(val = val.trim()))
+          throw new CompileException("${node.lineNumber}: illegal action, $val");
+
+        if (name == null)
+          name = _current.lastCtrl;
+
+        _write("\n$_pre  ..on.$action.add((_e){\n$_pre    ");
+        if (name != null)
+          _write("$name.");
+        _writeln("$val(_e);");
+        if (name != null)
+          _writeln("$_pre    $name.onCommand('$val', _e);");
+        _write("$_pre  })");
       } else {
         switch (attr) {
         case "forEach": case "if": case "control":
@@ -241,7 +303,30 @@ ${_pre}final $viewVar = $name(parent: ${parentVar!=null?parentVar:'parent'}''');
       }
     }
     _writeln(";");
+    _outAddChild(viewVar, parentVar);
 
+    for (final n in node.nodes)
+      _do(n);
+    _current.endView();
+
+    if (control != null) {
+      _undent();
+      _outEndTempl();
+      _endTemplate();
+
+      vi = _current.startView(); viewVar = vi.name; parentVar = vi.parent;
+
+      _writeln('''
+$_pre$ctrlVar.template = $ctrlTempl;
+${_pre}final $viewVar = $ctrlVar.view = $ctrlTempl()[0];''');
+      _outAddChild(viewVar, parentVar);
+      _writeln("$_pre$ctrlVar.onRender();");
+
+      _current.endView();
+      _current.endCtrl();
+    }
+  }
+  void _outAddChild(String viewVar, String parentVar) {
     if (parentVar != null)
       _writeln("$_pre$parentVar.addChild($viewVar);");
     else
@@ -249,20 +334,6 @@ ${_pre}final $viewVar = $name(parent: ${parentVar!=null?parentVar:'parent'}''');
 ${_pre}if (parent != null)
 $_pre  parent.addChild($viewVar);
 ${_pre}${_current.listVar}.add($viewVar);''');
-
-    for (final n in node.nodes)
-      _do(n);
-
-    final control = attrs["control"];
-    if (control != null) {
-      if (control.isEmpty) {
-        _warning("${node.lineNumber}: The control attribute is empty");
-      } else {
-        _writeln("${_pre}($control)($viewVar);");
-      }
-    }
-
-    _current.endView();
   }
 
   //Handle Text
@@ -305,15 +376,11 @@ ${_pre}${_current.listVar}.add($viewVar);''');
         len = val.length;
       if (cc == '{') {
         if (val[len - 1] == '}' && val.indexOf("\${", 2) < 0)
-          return val.substring(2, len -1);
+          return val.substring(2, len - 1);
       } else { //handle $foo
-        for (int i = 1;;) {
-          if (i >= len)
-            return val.substring(1, len);
-          cc = val[i++];
-          if (!_isLetter(cc) && !_isDigit(cc) && cc != "_" && cc != "\$")
-            break;
-        }
+        final v = val.substring(1);
+        if (_isValidId(v))
+          return v;
       }
     }
     return "'''$val'''";
@@ -363,37 +430,51 @@ class _VarInfo {
 class _TemplateInfo {
   ///Variable name referencing to the return list
   final listVar;
-  ///An ID represents the depth of this template info
-  final String depth;
-  final Queue<VarInfo> varInfos = new Queue();
-  int _nextId = 0;
+  ///A prefix representing this template info (in a stack of template infos)
+  final String _idep;
+  final Queue<_VarInfo> _vars = new Queue();
+  final Queue<String> _ctrls = new Queue();
+  final _TemplateInfo prev;
+  int _nextId = 0, _nextCtrlId = 0;
 
   factory _TemplateInfo(_TemplateInfo prev) {
-    var depth, listVar;
+    var idep, listVar;
     if (prev == null) {
-      depth = "";
+      idep = "";
       listVar = "_rv";
     } else {
-      depth = prev.depth;
-      depth = depth.isEmpty ? "a": depth == "z" ? "A":
-        new String.fromCharCodes([depth.charCodeAt(0) + 1]);
+      idep = prev._idep;
+      idep = idep.isEmpty ? "a": idep == "z" ? "A":
+        new String.fromCharCodes([idep.charCodeAt(0) + 1]);
         //assume at most 1+26+26 depth
-      listVar = "_rv${depth}";
+      listVar = "_rv${idep}";
     }
-    return new _TemplateInfo._(depth, listVar);
+    return new _TemplateInfo._(prev, idep, listVar);
   }
-  _TemplateInfo._(this.depth, this.listVar);
+  _TemplateInfo._(this.prev, this._idep, this.listVar);
 
   _VarInfo startView() {
-    final prev = varInfos.isEmpty ? null: varInfos.first,
-      id = prev != null ? prev._nextId++: _nextId++,
-      prefix = prev != null ? "${prev.name}_": "_v$depth";
-    _VarInfo vi = new _VarInfo(prev, "$prefix$id");
-    varInfos.addFirst(vi);
+    final vprev = _vars.isEmpty ? null: _vars.first,
+      id = vprev != null ? vprev._nextId++: _nextId++,
+      prefix = vprev != null ? "${vprev.name}_": "_v$_idep";
+    final vi = new _VarInfo(vprev, "$prefix$id");
+    _vars.addFirst(vi);
     return vi;
   }
   void endView() {
-    varInfos.removeFirst();
+    _vars.removeFirst();
+  }
+
+  String get lastCtrl
+  => _ctrls.isEmpty ? prev != null ? prev.lastCtrl: null: _ctrls.first;
+
+  String startCtrl() {
+    final ci = "_c$_idep${_nextCtrlId++}";
+    _ctrls.addFirst(ci);
+    return ci;
+  }
+  void endCtrl() {
+    _ctrls.removeFirst();
   }
 }
 
@@ -414,4 +495,12 @@ bool _isDigit(String char) {
   if (char == null) return false;
   int cc = char.charCodeAt(0);
   return cc >= _ZERO && cc < _ZERO + 10;
+}
+bool _isIdLetter(String cc)
+=> _isLetter(cc) || _isDigit(cc) || cc == "_" || cc == "\$";
+bool _isValidId(String s) {
+  for (int i = s.length; --i >= 0;)
+    if (!_isIdLetter(s[i]))
+      return false;
+  return !s.isEmpty;
 }
