@@ -12,7 +12,7 @@ List<View> Inputs({View parent, friends, zoo}) { //13#
   List<View> _rv = new List(); View _this_;
 
   //15# <View layout="type: linear; orient:...>
-  final _v0 = (_this_ = new View())
+  final _v0 = _this_ = new View()
     ..layout.text = '''type: linear; orient: vertical'''
     ..style.cssText = '''border: 2px solid #333''';
   if (parent != null)
@@ -25,7 +25,7 @@ List<View> Inputs({View parent, friends, zoo}) { //13#
   for (var each in ['text', 'password', 'multiline', 'number', 'date', 'color']) {
 
     //17# <View forEach="each in ['text', 'pas...>
-    final _v0_1 = (_this_ = new View())
+    final _v0_1 = _this_ = new View()
       ..layout.text = '''type: linear; align: center; spacing: 0 3'''
       ..classes.add("foo1")
       ..classes.add("foo2");
@@ -39,7 +39,7 @@ List<View> Inputs({View parent, friends, zoo}) { //13#
     if (each != 'multiline') {
 
       //20# <TextBox type="$each" if="each != 'm...>
-      final _v0_1_1 = (_this_ = new TextBox())
+      final _v0_1_1 = _this_ = new TextBox()
         ..type = each;
       _v0_1.addChild(_v0_1_1);
     }
@@ -47,7 +47,7 @@ List<View> Inputs({View parent, friends, zoo}) { //13#
     if (each == 'multiline') {
 
       //21# <MultilineBox if="each == 'multiline'">
-      final _v0_1_2 = (_this_ = new MultilineBox());
+      final _v0_1_2 = _this_ = new MultilineBox();
       _v0_1.addChild(_v0_1_2);
     }
   }
@@ -57,7 +57,7 @@ List<View> Inputs({View parent, friends, zoo}) { //13#
     List<View> _rva = new List(); View _this_;
 
     //26# <ListHead label="${each.name}" image...>
-    final _va0 = (_this_ = new ListHead())
+    final _va0 = _this_ = new ListHead()
       ..label = each.name
       ..image = each.photo;
     if (parent != null)
@@ -71,7 +71,7 @@ List<View> Inputs({View parent, friends, zoo}) { //13#
   }
 
   //29# <ListView model="${friends}" data-de...>
-  final _v1 = (_this_ = new ListView())
+  final _v1 = _this_ = new ListView()
     ..model = friends
     ..dataAttributes["detail"] = InputDetail
     ..dataAttributes["header"] = InputHeader;
@@ -84,7 +84,7 @@ List<View> Inputs({View parent, friends, zoo}) { //13#
     List<View> _rva = new List(); View _this_;
 
     //31# <View layout="type: linear; orient:...>
-    final _va0 = (_this_ = new View())
+    final _va0 = _this_ = (_c0.view == null ? _c0.view = new View(): new View())
       ..layout.text = '''type: linear; orient: vertical''';
     if (parent != null)
       parent.addChild(_va0);
@@ -97,7 +97,7 @@ List<View> Inputs({View parent, friends, zoo}) { //13#
     }
 
     //33# <TextView html="\n      ${friends[0]...>
-    final _va0_1 = (_this_ = new TextView())
+    final _va0_1 = _this_ = new TextView()
       ..html = '''
       ${friends[0]}
       <ul>
@@ -108,9 +108,7 @@ List<View> Inputs({View parent, friends, zoo}) { //13#
     return _rva;
   }
   _c0.template = _c0T;
-  final _v2 = _c0.view = _c0T()[0];
-  if (parent != null)
-    parent.addChild(_v2);
+  final _v2 = _c0T(parent: parent)[0];
   _rv.add(_v2);
   _c0.onRender();
 
@@ -136,7 +134,7 @@ List<View> AnotherFood({View parent, foods}) { //44#
     if (each == 'orange') {
 
       //48# <View class="hilite">
-      final _v1 = (_this_ = new View())
+      final _v1 = _this_ = new View()
         ..classes.add("hilite");
       if (parent != null)
         parent.addChild(_v1);

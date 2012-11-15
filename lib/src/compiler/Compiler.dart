@@ -228,7 +228,7 @@ ${_pre}final $viewVar = $name(parent: ${parentVar!=null?parentVar:'parent'}''');
         _write(_isValidId(control) ? "new $control()": control);
         _writeln(";");
         if (ctrlName != null)
-          _writeln("final $ctrlName = $ctrlVar;");
+          _writeln("${_pre}final $ctrlName = $ctrlVar;");
 
         _startTemplate();
         _outBeginTempl(ctrlTempl, "", node.lineNumber);
@@ -241,9 +241,19 @@ ${_pre}final $viewVar = $name(parent: ${parentVar!=null?parentVar:'parent'}''');
     _write("\n$_pre//$lineInfo");
     _write(bText ? _toComment(attrs["text"]): _toTagComment(name, attrs));
     _write("\n${_pre}final $viewVar = ");
-    if (!bText) _write("(_this_ = ");
-    _write("new $name()");
-    if (!bText) _write(")");
+    if (bText) { 
+      _write("new $name()");
+    } else {//if bText, ctrlVar must be null (since no control attr)
+      _write("_this_ = ");
+
+      //we have to assign view as soon as possible since attributes might refer
+      //to it. also control's template might be used in other place, so better to
+      //check if it is null before assignment
+      if (ctrlVar != null)
+        _write("($ctrlVar.view == null ? $ctrlVar.view = new $name(): new $name())");
+      else
+        _write("new $name()");
+    }
 
     for (final attr in attrs.keys) {
       String val = attrs[attr];
@@ -303,7 +313,14 @@ ${_pre}final $viewVar = $name(parent: ${parentVar!=null?parentVar:'parent'}''');
       }
     }
     _writeln(";");
-    _outAddChild(viewVar, parentVar);
+
+    if (parentVar != null)
+      _writeln("$_pre$parentVar.addChild($viewVar);");
+    else
+      _writeln('''
+${_pre}if (parent != null)
+$_pre  parent.addChild($viewVar);
+${_pre}${_current.listVar}.add($viewVar);''');
 
     for (final n in node.nodes)
       _do(n);
@@ -318,22 +335,14 @@ ${_pre}final $viewVar = $name(parent: ${parentVar!=null?parentVar:'parent'}''');
 
       _writeln('''
 $_pre$ctrlVar.template = $ctrlTempl;
-${_pre}final $viewVar = $ctrlVar.view = $ctrlTempl()[0];''');
-      _outAddChild(viewVar, parentVar);
+${_pre}final $viewVar = $ctrlTempl(parent: ${parentVar != null ? parentVar: 'parent'})[0];''');
+      if (parentVar == null)
+        _writeln("${_pre}${_current.listVar}.add($viewVar);");
       _writeln("$_pre$ctrlVar.onRender();");
 
       _current.endView();
       _current.endCtrl();
     }
-  }
-  void _outAddChild(String viewVar, String parentVar) {
-    if (parentVar != null)
-      _writeln("$_pre$parentVar.addChild($viewVar);");
-    else
-      _writeln('''
-${_pre}if (parent != null)
-$_pre  parent.addChild($viewVar);
-${_pre}${_current.listVar}.add($viewVar);''');
   }
 
   //Handle Text

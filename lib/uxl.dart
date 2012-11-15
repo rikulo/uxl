@@ -48,7 +48,8 @@ class Control {
       final parentNode = view.node.parent, nextNode = view.node.nextNode;
 
       view.remove();
-      view = template()[0];
+      view = null; //clear first, so template will assign to it
+      template()[0];
 
       if (parentNode != null)
         view.addToDocument(ref: nextNode != null ? nextNode: parentNode,
@@ -57,7 +58,8 @@ class Control {
       final next = view.nextSibling;
 
       view.remove();
-      view = template()[0];
+      view = null; //clear first, so template will assign to it
+      template()[0];
 
       parent.addChild(view, next);
       parent.requestLayout();

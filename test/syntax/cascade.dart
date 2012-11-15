@@ -16,13 +16,13 @@ List<View> foo({View parent}) { //12#
   List<View> _rv = new List(); View _this_;
 
   //13# <TextView>
-  final _v0 = (_this_ = new TextView());
+  final _v0 = _this_ = new TextView();
   if (parent != null)
     parent.addChild(_v0);
   _rv.add(_v0);
 
   //14# <TestView a.foo="a & < b">
-  final _v1 = (_this_ = new TestView())
+  final _v1 = _this_ = new TestView()
     ..a.foo = '''a & < b''';
   if (parent != null)
     parent.addChild(_v1);
@@ -35,7 +35,7 @@ List<View> foo({View parent}) { //12#
   _v1.addChild(_v1_0);
 
   //17# <Button>
-  final _v1_1 = (_this_ = new Button());
+  final _v1_1 = _this_ = new Button();
   _v1.addChild(_v1_1);
   return _rv;
 }

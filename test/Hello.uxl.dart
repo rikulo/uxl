@@ -28,13 +28,13 @@ List<View> Hello({View parent}) { //24#
   List<View> _rv = new List(); View _this_;
 
   final _c0 = new HelloControl();
-final ctrl = _c0;
+  final ctrl = _c0;
   List<View> _c0T({View parent}) { //25#
     List<View> _rva = new List(); View _this_;
 
     //25# <Panel layout="type:linear; orient:...>
-    final _va0 = (_this_ = new Panel())
-      ..layout.text = '''type:linear; orient: vertical; spacing: 8 4'''
+    final _va0 = _this_ = (_c0.view == null ? _c0.view = new Panel(): new Panel())
+      ..layout.text = '''type:linear; orient: vertical; gap: 12; spacing: 0'''
       ..profile.text = '''location: center center; width: 130; height: 80''';
     if (parent != null)
       parent.addChild(_va0);
@@ -46,7 +46,7 @@ final ctrl = _c0;
     _va0.addChild(_va0_0);
 
     //29# <Button text="Change" on.click="change">
-    final _va0_1 = (_this_ = new Button())
+    final _va0_1 = _this_ = new Button()
       ..text = '''Change'''
       ..on.click.add((_e){
         _c0.change(_e);
@@ -56,9 +56,7 @@ final ctrl = _c0;
     return _rva;
   }
   _c0.template = _c0T;
-  final _v0 = _c0.view = _c0T()[0];
-  if (parent != null)
-    parent.addChild(_v0);
+  final _v0 = _c0T(parent: parent)[0];
   _rv.add(_v0);
   _c0.onRender();
   return _rv;

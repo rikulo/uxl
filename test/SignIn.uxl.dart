@@ -13,7 +13,7 @@ List<View> SignIn({View parent, rememberMe: ''}) { //9#
   List<View> _rv = new List(); View _this_;
 
   //10# <Panel layout="type:linear; orient:...>
-  final _v0 = (_this_ = new Panel())
+  final _v0 = _this_ = new Panel()
     ..layout.text = '''type:linear; orient: vertical; spacing: 4'''
     ..profile.text = '''location: center center; width: 180; height: 145''';
   if (parent != null)
@@ -26,7 +26,7 @@ List<View> SignIn({View parent, rememberMe: ''}) { //9#
   _v0.addChild(_v0_0);
 
   //13# <TextBox id="username" value="$remem...>
-  final _v0_1 = (_this_ = new TextBox())
+  final _v0_1 = _this_ = new TextBox()
     ..id = '''username'''
     ..value = rememberMe;
   _v0.addChild(_v0_1);
@@ -37,12 +37,12 @@ List<View> SignIn({View parent, rememberMe: ''}) { //9#
   _v0.addChild(_v0_2);
 
   //15# <TextBox id="password">
-  final _v0_3 = (_this_ = new TextBox())
+  final _v0_3 = _this_ = new TextBox()
     ..id = '''password''';
   _v0.addChild(_v0_3);
 
   //16# <Button text="Sign in" profile="spac...>
-  final _v0_4 = (_this_ = new Button())
+  final _v0_4 = _this_ = new Button()
     ..text = '''Sign in'''
     ..profile.text = '''spacing: 12 4 4 4''';
   _v0.addChild(_v0_4);
