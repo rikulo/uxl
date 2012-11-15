@@ -29,7 +29,7 @@ List<View> Hello({View parent}) { //24#
 
   final _c0 = new HelloControl();
   final ctrl = _c0;
-  List<View> _c0T({View parent}) { //25#
+  List<View> _c0T({View parent, View beforeChild}) { //25#
     List<View> _rva = new List(); View _this_;
 
     //25# <Panel layout="type:linear; orient:...>
@@ -37,7 +37,7 @@ List<View> Hello({View parent}) { //24#
       ..layout.text = '''type:linear; orient: vertical; gap: 12; spacing: 0'''
       ..profile.text = '''location: center center; width: 130; height: 80''';
     if (parent != null)
-      parent.addChild(_va0);
+      parent.addChild(_va0, beforeChild);
     _rva.add(_va0);
 
     //UXL is ${ctrl.message}!

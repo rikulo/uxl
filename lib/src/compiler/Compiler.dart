@@ -124,8 +124,6 @@ class Compiler {
 
   //Handles the definition of a template
   void _defineTemplate(Element elem) {
-    _startTemplate();
-
     final name = _requiredAttr(elem, "name");
     if (_tmplDefs.contains(name))
       throw new CompileException("${elem.lineNumber}: Duplicated template definition, $name");
@@ -137,9 +135,9 @@ class Compiler {
       args = elem.attributes["args"];
     if (desc == null)
       desc = "Template, $name, for creating views.";
-    args = args != null && !args.trim().isEmpty ? ", $args": "";
     _checkAttrs(elem, _templAllowed);
 
+    _startTemplate(args);
     _writeln("\n$_pre/** $desc */");
     _outBeginTempl(name, args, elem.lineNumber);
 
@@ -152,6 +150,7 @@ class Compiler {
     _endTemplate();
   }
   void _outBeginTempl(String name, String args, int lineNumber) {
+    args = args != null && !args.trim().isEmpty ? ", $args": "";
     _writeln('''
 ${_pre}List<View> $name({View parent$args}) { //$lineNumber#
 $_pre  List<View> ${_current.listVar} = new List(); View _this_;''');
@@ -230,8 +229,9 @@ ${_pre}final $viewVar = $name(parent: ${parentVar!=null?parentVar:'parent'}''');
         if (ctrlName != null)
           _writeln("${_pre}final $ctrlName = $ctrlVar;");
 
-        _startTemplate();
-        _outBeginTempl(ctrlTempl, "", node.lineNumber);
+        final args = "View beforeChild";
+        _startTemplate(args);
+        _outBeginTempl(ctrlTempl, args, node.lineNumber);
         _indent();
       }
     }
@@ -319,7 +319,7 @@ ${_pre}final $viewVar = $name(parent: ${parentVar!=null?parentVar:'parent'}''');
     else
       _writeln('''
 ${_pre}if (parent != null)
-$_pre  parent.addChild($viewVar);
+$_pre  parent.addChild($viewVar${_current.beforeArg});
 ${_pre}${_current.listVar}.add($viewVar);''');
 
     for (final n in node.nodes)
@@ -333,9 +333,19 @@ ${_pre}${_current.listVar}.add($viewVar);''');
 
       vi = _current.startView(); viewVar = vi.name; parentVar = vi.parent;
 
+      var parentArg, beforeArg;
+      if (parentVar != null) {
+        parentArg = parentVar;
+        beforeArg = "";
+      } else {
+        parentArg = "parent";
+        beforeArg = _current.beforeArg;
+        if (!beforeArg.isEmpty)
+          beforeArg = ", beforeChild: beforeChild";
+      }
       _writeln('''
 $_pre$ctrlVar.template = $ctrlTempl;
-${_pre}final $viewVar = $ctrlTempl(parent: ${parentVar != null ? parentVar: 'parent'})[0];''');
+${_pre}final $viewVar = $ctrlTempl(parent: $parentArg$beforeArg)[0];''');
       if (parentVar == null)
         _writeln("${_pre}${_current.listVar}.add($viewVar);");
       _writeln("$_pre$ctrlVar.onRender();");
@@ -420,8 +430,8 @@ ${_pre}final $viewVar = $ctrlTempl(parent: ${parentVar != null ? parentVar: 'par
 
   //parentVar is null => a new template
   //parentVar is not null => a new indent (for child views)
-  void _startTemplate() {
-    _tmplInfos.addFirst(_current = new _TemplateInfo(_current));
+  void _startTemplate(String args) {
+    _tmplInfos.addFirst(_current = new _TemplateInfo(_current, args));
   }
   void _endTemplate() {
     _tmplInfos.removeFirst();
@@ -439,14 +449,16 @@ class _VarInfo {
 class _TemplateInfo {
   ///Variable name referencing to the return list
   final listVar;
+  final _TemplateInfo prev;
+  ///A string inserted to parent.addChild(...$beforeChild)
+  final String beforeArg;
   ///A prefix representing this template info (in a stack of template infos)
   final String _idep;
   final Queue<_VarInfo> _vars = new Queue();
   final Queue<String> _ctrls = new Queue();
-  final _TemplateInfo prev;
   int _nextId = 0, _nextCtrlId = 0;
 
-  factory _TemplateInfo(_TemplateInfo prev) {
+  factory _TemplateInfo(_TemplateInfo prev, String args) {
     var idep, listVar;
     if (prev == null) {
       idep = "";
@@ -458,9 +470,10 @@ class _TemplateInfo {
         //assume at most 1+26+26 depth
       listVar = "_rv${idep}";
     }
-    return new _TemplateInfo._(prev, idep, listVar);
+    return new _TemplateInfo._(prev, idep, listVar,
+      args != null && _hasWord(args, "beforeChild") ? ", beforeChild": "");
   }
-  _TemplateInfo._(this.prev, this._idep, this.listVar);
+  _TemplateInfo._(this.prev, this._idep, this.listVar, this.beforeArg);
 
   _VarInfo startView() {
     final vprev = _vars.isEmpty ? null: _vars.first,
@@ -512,4 +525,14 @@ bool _isValidId(String s) {
     if (!_isIdLetter(s[i]))
       return false;
   return !s.isEmpty;
+}
+
+bool _hasWord(String s, String w) {
+  for (int i = 0, j; (j = s.indexOf(w, i)) >= 0;) {
+    i = j + 1;
+    if ((j == 0 || !_isLetter(s[j - 1]))
+    && ((j += w.length) >= s.length || !_isLetter(s[j])))
+      return true;
+  }
+  return false;
 }

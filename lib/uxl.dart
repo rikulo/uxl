@@ -7,7 +7,7 @@ import "package:rikulo/view.dart";
 import "package:rikulo/event.dart" show ViewEvent;
 import "package:rikulo/layout.dart" show layoutManager;
 
-typedef List<View> ControlTemplate({View parent});
+typedef List<View> ControlTemplate({View parent, View beforeChild});
 
 /**
  * The control used in UXL Model-View-Control (MVC) design pattern.
@@ -59,9 +59,8 @@ class Control {
 
       view.remove();
       view = null; //clear first, so template will assign to it
-      template()[0];
+      template(parent: parent, beforeChild: next)[0];
 
-      parent.addChild(view, next);
       parent.requestLayout();
     }
 
