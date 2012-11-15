@@ -16,21 +16,37 @@ typedef List<View> ControlTemplate({View parent, View beforeChild});
  *
  * ##Automatically Re-rendering
  *
+ * Each command bound by the `on` attribute will invoke [onCommand] after
+ * the given method (aka., the command handler) has been called.
+ * By default, [onCommand] will invoke [render]
+ * to re-instantiate the view ([view]) and all of its descendant views.
+ *
+ * In other words, you don't have to worry how to synchronize the change back to UI.
+ * You need to modify the model as you want in the command handler. UI will be
+ * re-rendered to reflect the latest states.
+ *
+ * However, you might prefer to alter the UI the way you want.
+ * For example, some command won't change the UI at all, and some command
+ * might just change a small part of UI. To do so, you have to override [onCommand]
+ * to call [render] only really necessary.
+ *
  * ##onRender callback
  *
+ * When the view ([view]) and all of its descendant views are instantiated,
+ * [onRender] will be called. You can override it to initialize UI if necessary.
  */
 class Control {
   /** The view associated with this controller.
    *
    * This field will be assigned right after the constructor is called.
+   * Each time [render] is called, this field will be updated with the view
+   * being instantiated.
    */
   View view;
   /** The template associated with this controller.
    *
    * The instantiation of the views are actually done by calling
-   * this method:
-   *
-   *    View view = ctrl.template()[0];
+   * this method.
    *
    * > The template always returns a single-element list.
    *
@@ -68,13 +84,21 @@ class Control {
     layoutManager.flush(); //immediate for better responsive
   }
 
-  /** Called after a command is received.
+  /** Called after a command is received and processed by the command handler.
    *
-   * Default: it invokes [render] to render all children.
-   * To have better performance, you can override this method not to re-render.
+   * Default: it invokes [render] to render the view ([view]) and all of its
+   * descendant views. It is convenient, but, for better performance (if UI is
+   * complicated), you can override this method not to re-render and alter UI
+   * manually.
+   *
    * For example,
    *
-   *    void onCommand(String command, [View event]) {
+   *    void onCommand(String command, [ViewEvent event]) {
+   *      //does nothing
+   *    }
+   *    void delete(ViewEvent event) {
+   *      model.delete(something);
+   *      view.query("#foo").... //update only the part of UI being affected
    *    }
    */
   void onCommand(String command, [ViewEvent event]) => render();
