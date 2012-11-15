@@ -7,6 +7,8 @@ import "package:rikulo/view.dart";
 import "package:rikulo/event.dart" show ViewEvent;
 import "package:rikulo/layout.dart" show layoutManager;
 
+/** The template function of a control.
+ */
 typedef List<View> ControlTemplate({View parent, View beforeChild});
 
 /**
@@ -93,13 +95,13 @@ class Control {
    *
    * For example,
    *
-   *    void onCommand(String command, [ViewEvent event]) {
-   *      //does nothing
-   *    }
-   *    void delete(ViewEvent event) {
-   *      model.delete(something);
-   *      view.query("#foo").... //update only the part of UI being affected
-   *    }
+   *     void onCommand(String command, [ViewEvent event]) {
+   *       //does nothing
+   *     }
+   *     void delete(ViewEvent event) {
+   *       model.delete(something);
+   *       view.query("#foo").... //update only the part of UI being affected
+   *     }
    */
   void onCommand(String command, [ViewEvent event]) => render();
   /** Called after [view] and all children (defined in [template]) are instantiated.
