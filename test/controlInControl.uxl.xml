@@ -1,0 +1,15 @@
+<?dart
+import "package:rikulo/view.dart";
+import "package:rikulo_uxl/uxl.dart";
+
+void main() {
+  CIC()[0]..addToDocument();
+}
+?>
+
+<Template name="CIC">
+  <View control="Control" layout="type:linear" style="border: 1px solid blue">
+    <View control="Control" style="border: 1px solid red">Inner</View>
+    Outer
+  </View>
+</Template>

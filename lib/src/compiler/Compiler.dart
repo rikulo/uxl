@@ -38,7 +38,7 @@ class Compiler {
       if (elem.tagName == "Template")
         _tmplDecls.add(_requiredAttr(elem, "name"));
       else if (topmost)
-        throw new CompileException("${elem.lineNumber}: The root element must be <Template>.");
+        throw new CompileException("Line ${elem.lineNumber}: The root element must be <Template>.");
     } else if (node is ProcessingInstruction) {
       ProcessingInstruction pi = node;
       if (pi.target == "template" && !pi.data.isEmpty)
@@ -126,7 +126,7 @@ class Compiler {
   void _defineTemplate(Element elem) {
     final name = _requiredAttr(elem, "name");
     if (_tmplDefs.contains(name))
-      throw new CompileException("${elem.lineNumber}: Duplicated template definition, $name");
+      throw new CompileException("Line ${elem.lineNumber}: Duplicated template definition, $name");
     _tmplDefs.add(name);
     if (verbose)
       print("Generate template $name...");
@@ -262,19 +262,19 @@ ${_pre}final $viewVar = $name(parent: ${parentVar!=null?parentVar:'parent'}''');
       } else if (attr.startsWith("on.")) { //action
         final action = attr.substring(3);
         if (!_isValidId(action))
-          throw new CompileException("${node.lineNumber}: illegal action name, $attr");
+          throw new CompileException("Line ${node.lineNumber}: illegal action name, $attr");
 
         String name;
         final i = val.indexOf('.');
         if (i >= 0) {
           name = val.substring(0, i).trim();
           if (!_isValidId(name))
-            throw new CompileException("${node.lineNumber}: illegal action, $val");
+            throw new CompileException("Line ${node.lineNumber}: illegal action, $val");
           val = val.substring(i + 1);
         }
 
         if (!_isValidId(val = val.trim()))
-          throw new CompileException("${node.lineNumber}: illegal action, $val");
+          throw new CompileException("Line ${node.lineNumber}: illegal action, $val");
 
         if (name == null)
           name = _current.lastCtrl;
@@ -370,7 +370,7 @@ ${_pre}final $viewVar = $ctrlTempl(parent: $parentArg$beforeArg)[0];''');
   String _requiredAttr(Element elem, String attr) {
     final val = elem.attributes[attr];
     if (val == null || val.isEmpty)
-      throw new CompileException("${elem.lineNumber}: The $attr attribute is required");
+      throw new CompileException("Line ${elem.lineNumber}: The $attr attribute is required");
     return val;
   }
   void _checkAttrs(Element elem, Set<String> allowedAttrs) {
