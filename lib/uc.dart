@@ -49,7 +49,7 @@ void main() {
               new HtmlParser(text, encoding: env.encoding.name,
                 lowercaseElementName: false, lowercaseAttrName: false, cdataOK: true)
                 .parseFragment(),
-              out, encoding: env.encoding, verbose: env.verbose);
+              out, sourceName: name, encoding: env.encoding, verbose: env.verbose);
           } finally {
             out.close();
           }

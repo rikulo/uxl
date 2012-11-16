@@ -13,7 +13,7 @@ part "src/compiler/Util.dart";
 /** Compiles the given UXL document to the given output stream.
  * Notice that the caller has to close the output stream by himself.
  */
-void compile(Document source, OutputStream out, {Encoding encoding: Encoding.UTF_8,
-  bool verbose: false}) {
-  new Compiler(source, out, encoding: encoding, verbose: verbose).compile();
+void compile(Document source, OutputStream out, {
+String sourceName, Encoding encoding: Encoding.UTF_8, bool verbose: false}) {
+  new Compiler(source, out, sourceName: sourceName, encoding: encoding, verbose: verbose).compile();
 }

@@ -50,7 +50,7 @@ List<View> Hello({View parent}) { //24#
       ..text = '''Change'''
       ..on.click.add((_e){
         _c0.change(_e);
-        _c0.onCommand('change', _e);
+        _c0.onCommand(['change'], _e);
       });
     _va0.addChild(_va0_1);
     return _rva;

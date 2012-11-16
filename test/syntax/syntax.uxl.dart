@@ -80,14 +80,14 @@ List<View> Inputs({View parent, friends, zoo}) { //13#
   _rv.add(_v1);
 
   final _c0 = new MagicControl();
-  List<View> _c0T({View parent}) { //31#
+  List<View> _c0T({View parent, View beforeChild}) { //31#
     List<View> _rva = new List(); View _this_;
 
     //31# <View layout="type: linear; orient:...>
     final _va0 = _this_ = (_c0.view == null ? _c0.view = new View(): new View())
       ..layout.text = '''type: linear; orient: vertical''';
     if (parent != null)
-      parent.addChild(_va0);
+      parent.addChild(_va0, beforeChild);
     _rva.add(_va0);
 
     for (var animal in zoo.animals) {

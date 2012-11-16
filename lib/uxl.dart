@@ -58,7 +58,9 @@ class Control {
 
   /** Re-render the view (and all of its child views).
    * It first creates the view with [template], and then replaces [view].
-   * Finally, invoke [onRender]
+   * Finally, invoke [onRender].
+   *
+   * Notice it will invoke `parent.requestLayout(true)' automatically.
    */
   void render() {
     final parent = view.parent;
@@ -86,7 +88,8 @@ class Control {
     layoutManager.flush(); //immediate for better responsive
   }
 
-  /** Called after a command is received and processed by the command handler.
+  /** Called after one or multiple commands are received and processed by
+   * the command handler(s).
    *
    * Default: it invokes [render] to render the view ([view]) and all of its
    * descendant views. It is convenient, but, for better performance (if UI is
@@ -95,15 +98,21 @@ class Control {
    *
    * For example,
    *
-   *     void onCommand(String command, [ViewEvent event]) {
+   *     void onCommand(List<String> commands, [ViewEvent event]) {
    *       //does nothing
    *     }
    *     void delete(ViewEvent event) {
    *       model.delete(something);
    *       view.query("#foo").... //update only the part of UI being affected
    *     }
+   *     void reload(ViewEvent event) {
+   *       model.reload();
+   *       render(); //re-render the view
+   *     }
+   *
+   * + [commands] - a list of commands being processed (never null).
    */
-  void onCommand(String command, [ViewEvent event]) => render();
+  void onCommand(List<String> commands, [ViewEvent event]) => render();
   /** Called after [view] and all children (defined in [template]) are instantiated.
    *
    * Default: does nothing. You can override it to handle the views if necessary.

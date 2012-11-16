@@ -7,6 +7,7 @@ part of rikulo_uxl_compile;
  * The UXL compiler.
  */
 class Compiler {
+  final String sourceName;
   final Document source;
   final OutputStream destination;
   final Encoding encoding;
@@ -20,7 +21,9 @@ class Compiler {
   //defined template names
   final Set<String> _tmplDefs = new Set();
 
-  Compiler(this.source, this.destination, {Encoding this.encoding:Encoding.UTF_8,
+  Compiler(Document this.source, OutputStream this.destination, {
+    String this.sourceName,
+    Encoding this.encoding:Encoding.UTF_8,
     bool this.verbose: false});
 
   void compile() {
@@ -38,7 +41,7 @@ class Compiler {
       if (elem.tagName == "Template")
         _tmplDecls.add(_requiredAttr(elem, "name"));
       else if (topmost)
-        throw new CompileException("Line ${elem.lineNumber}: The root element must be <Template>.");
+        throw new CompileException("${_loc(elem)}The root element must be <Template>.");
     } else if (node is ProcessingInstruction) {
       ProcessingInstruction pi = node;
       if (pi.target == "template" && !pi.data.isEmpty)
@@ -73,7 +76,7 @@ class Compiler {
     if (forEach != null) {
       if (forEach.isEmpty) {
         forEach = null;
-        _warning("${elem.lineNumber}: The forEach attribute is empty");
+        _warning("The forEach attribute is empty", elem);
       } else {
         _writeln("\n${_pre}for (var $forEach) {");
         _indent();
@@ -84,7 +87,7 @@ class Compiler {
     if (ifc != null) {
       if (ifc.isEmpty) {
         ifc = null;
-        _warning("${elem.lineNumber}: The if attribute is empty");
+        _warning("The if attribute is empty", elem);
       } else {
         _writeln("\n${_pre}if ($ifc) {");
         _indent();
@@ -97,7 +100,7 @@ class Compiler {
     } else if (_tmplDecls.contains(name)) {
       _newTempalte(elem, name, attrs);
       if (!elem.nodes.isEmpty)
-        _warning("${elem.lineNumber}: $name is a template. It can't have child elements.");
+        _warning("$name is a template. It can't have child elements.", elem);
     } else {
       _newView(elem, name, attrs);
     }
@@ -118,7 +121,7 @@ class Compiler {
       case "template":
         break; //handled by _scan
       default:
-        _warning("${pi.lineNumber}: Unknown <? ${pi.target} ?>");
+        _warning("Unknown <? ${pi.target} ?>", pi);
     }
   }
 
@@ -126,7 +129,7 @@ class Compiler {
   void _defineTemplate(Element elem) {
     final name = _requiredAttr(elem, "name");
     if (_tmplDefs.contains(name))
-      throw new CompileException("Line ${elem.lineNumber}: Duplicated template definition, $name");
+      throw new CompileException("${_loc(elem)}Duplicated template definition, $name");
     _tmplDefs.add(name);
     if (verbose)
       print("Generate template $name...");
@@ -186,7 +189,7 @@ ${_pre}final $viewVar = $name(parent: ${parentVar!=null?parentVar:'parent'}''');
         }
 
         if (error)
-          _warning("${node.lineNumber}: Template doesn't support $attr");
+          _warning("Template doesn't support $attr", node);
         else
           _write(', $attr: ${_unwrap(attrs[attr])}');
       }
@@ -210,7 +213,7 @@ ${_pre}final $viewVar = $name(parent: ${parentVar!=null?parentVar:'parent'}''');
     if (control != null) {
       if ((control = control.trim()).isEmpty) {
         control = null;
-        _warning("${node.lineNumber}: The control attribute is empty");
+        _warning("The control attribute is empty", node);
       } else {
         final i = control.indexOf(':');
         if (i >= 0) {
@@ -260,31 +263,45 @@ ${_pre}final $viewVar = $name(parent: ${parentVar!=null?parentVar:'parent'}''');
       if (attr.startsWith("data-")) {
         _write('\n$_pre  ..dataAttributes["${attr.substring(5)}"] = ${_unwrap(val)}');
       } else if (attr.startsWith("on.")) { //action
-        final action = attr.substring(3);
-        if (!_isValidId(action))
-          throw new CompileException("Line ${node.lineNumber}: illegal action name, $attr");
+        final event = attr.substring(3);
+        if (!_isValidId(event))
+          throw new CompileException("${_loc(node)}Illegal event name, $attr");
 
-        String name;
-        final i = val.indexOf('.');
-        if (i >= 0) {
-          name = val.substring(0, i).trim();
-          if (!_isValidId(name))
-            throw new CompileException("Line ${node.lineNumber}: illegal action, $val");
-          val = val.substring(i + 1);
+        _write("\n$_pre  ..on.$event.add((_e){\n$_pre    ");
+        final Map<String, List<String>> cmds = new Map();
+        for (String act in val.split(',')) {
+          String name;
+          final i = act.indexOf('.');
+          if (i >= 0) {
+            name = act.substring(0, i).trim();
+            if (!_isValidId(name))
+              throw new CompileException("${_loc(node)}Illegal action, $act");
+            act = act.substring(i + 1);
+          }
+
+          if ((act = act.trim()).isEmpty && name == null)
+             continue; //skip
+          if (!_isValidId(act))
+            throw new CompileException("${_loc(node)}Illegal action, $act");
+
+          if (name == null)
+            name = _current.lastCtrl;
+          if (name != null) {
+            cmds.putIfAbsent(name, () => []).add(act);
+            _write("$name.");
+          }
+          _writeln("$act(_e);");
         }
-
-        if (!_isValidId(val = val.trim()))
-          throw new CompileException("Line ${node.lineNumber}: illegal action, $val");
-
-        if (name == null)
-          name = _current.lastCtrl;
-
-        _write("\n$_pre  ..on.$action.add((_e){\n$_pre    ");
-        if (name != null)
-          _write("$name.");
-        _writeln("$val(_e);");
-        if (name != null)
-          _writeln("$_pre    $name.onCommand('$val', _e);");
+        for (final name in cmds.keys) {
+          _write("$_pre    $name.onCommand([");
+          bool first = true;
+          for (final act in cmds[name]) {
+            if (first) first = false;
+            else _write(",");
+            _write("'$act'");
+          }
+          _writeln("], _e);");
+        }
         _write("$_pre  })");
       } else {
         switch (attr) {
@@ -370,17 +387,32 @@ ${_pre}final $viewVar = $ctrlTempl(parent: $parentArg$beforeArg)[0];''');
   String _requiredAttr(Element elem, String attr) {
     final val = elem.attributes[attr];
     if (val == null || val.isEmpty)
-      throw new CompileException("Line ${elem.lineNumber}: The $attr attribute is required");
+      throw new CompileException("${_loc(elem)}The $attr attribute is required");
     return val;
   }
   void _checkAttrs(Element elem, Set<String> allowedAttrs) {
     for (final attr in elem.attributes.keys)
       if (!allowedAttrs.contains(attr))
-        _warning("${elem.lineNumber}: The $attr attribute not allowed in ${elem.tagName}");
+        _warning("The $attr attribute not allowed in ${elem.tagName}", elem);
   }
 
   _indent() => _pre = "$_pre  ";
   _undent() => _pre = _pre.substring(0, _pre.length - 2);
+
+  //Returns the information about the give node
+  String _loc(Node node) {
+    final sb = new StringBuffer();
+    if (sourceName != null)
+      sb.add(sourceName).add(':');
+    final ln = node.lineNumber;
+    if (ln != null)
+      sb.add(ln).add(':');
+    return sb.isEmpty ? '': sb.add(' ').toString();
+  }
+  ///show warning messages
+  void _warning(String msg, [Node node]) {
+    print("${_loc(node)}Warning: $msg");
+  }
 
   static final Set<String> _templAllowed =
     new Set.from(const ["name", "args", "description"]);
@@ -437,102 +469,4 @@ ${_pre}final $viewVar = $ctrlTempl(parent: $parentArg$beforeArg)[0];''');
     _tmplInfos.removeFirst();
     _current = _tmplInfos.isEmpty ? null: _tmplInfos.first;
   }
-}
-
-class _VarInfo {
-  final String name;
-  final String parent;
-  int _nextId = 0;
-
-  _VarInfo(_VarInfo prev, this.name): parent = prev != null ? prev.name: null;
-}
-class _TemplateInfo {
-  ///Variable name referencing to the return list
-  final listVar;
-  final _TemplateInfo prev;
-  ///A string inserted to parent.addChild(...$beforeChild)
-  final String beforeArg;
-  ///A prefix representing this template info (in a stack of template infos)
-  final String _idep;
-  final Queue<_VarInfo> _vars = new Queue();
-  final Queue<String> _ctrls = new Queue();
-  int _nextId = 0, _nextCtrlId = 0;
-
-  factory _TemplateInfo(_TemplateInfo prev, String args) {
-    var idep, listVar;
-    if (prev == null) {
-      idep = "";
-      listVar = "_rv";
-    } else {
-      idep = prev._idep;
-      idep = idep.isEmpty ? "a": idep == "z" ? "A":
-        new String.fromCharCodes([idep.charCodeAt(0) + 1]);
-        //assume at most 1+26+26 depth
-      listVar = "_rv${idep}";
-    }
-    return new _TemplateInfo._(prev, idep, listVar,
-      args != null && _hasWord(args, "beforeChild") ? ", beforeChild": "");
-  }
-  _TemplateInfo._(this.prev, this._idep, this.listVar, this.beforeArg);
-
-  _VarInfo startView() {
-    final vprev = _vars.isEmpty ? null: _vars.first,
-      id = vprev != null ? vprev._nextId++: _nextId++,
-      prefix = vprev != null ? "${vprev.name}_": "_v$_idep";
-    final vi = new _VarInfo(vprev, "$prefix$id");
-    _vars.addFirst(vi);
-    return vi;
-  }
-  void endView() {
-    _vars.removeFirst();
-  }
-
-  String get lastCtrl
-  => _ctrls.isEmpty ? prev != null ? prev.lastCtrl: null: _ctrls.first;
-
-  String startCtrl() {
-    final ci = "_c$_idep${_nextCtrlId++}";
-    _ctrls.addFirst(ci);
-    return ci;
-  }
-  void endCtrl() {
-    _ctrls.removeFirst();
-  }
-}
-
-///show warning messages
-void _warning(String msg) {
-  print("Warning: $msg");
-}
-
-//FUTURE: use rikulo-commons instead
-const _ZERO = 48, _LOWER_A = 97, _UPPER_A = 65;
-
-bool _isLetter(String char) {
-  if (char == null) return false;
-  int cc = char.charCodeAt(0);
-  return cc >= _LOWER_A && cc < _LOWER_A + 26 || cc >= _UPPER_A && cc < _UPPER_A + 26;
-}
-bool _isDigit(String char) {
-  if (char == null) return false;
-  int cc = char.charCodeAt(0);
-  return cc >= _ZERO && cc < _ZERO + 10;
-}
-bool _isIdLetter(String cc)
-=> _isLetter(cc) || _isDigit(cc) || cc == "_" || cc == "\$";
-bool _isValidId(String s) {
-  for (int i = s.length; --i >= 0;)
-    if (!_isIdLetter(s[i]))
-      return false;
-  return !s.isEmpty;
-}
-
-bool _hasWord(String s, String w) {
-  for (int i = 0, j; (j = s.indexOf(w, i)) >= 0;) {
-    i = j + 1;
-    if ((j == 0 || !_isLetter(s[j - 1]))
-    && ((j += w.length) >= s.length || !_isLetter(s[j])))
-      return true;
-  }
-  return false;
 }
