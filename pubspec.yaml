@@ -12,4 +12,4 @@ dependencies:
   args: { sdk: args }
   logging: { sdk: logging }
   html5plus: { git: git://github.com/tomyeh/html5plus.git }
-  rikulo:
+  rikulo: { git: git://github.com/rikulo/rikulo.git }
