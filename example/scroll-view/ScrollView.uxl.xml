@@ -1,4 +1,7 @@
 <!-- ScrollViewTemplate -->
+<?dart
+part of ScrollViewDemo;
+?>
 
 <Template name="ScrollViewTemplate" args="rows: 30, cols: 30">
   <ScrollView class="scroll-view"

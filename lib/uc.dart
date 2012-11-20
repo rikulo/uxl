@@ -40,7 +40,7 @@ void main() {
       int i = dest.name.lastIndexOf('/') + 1;
       print("Compile ${source.name} to ${i > 0 ? dest.name.substring(i): dest.name}");
     }
-    source.readAsText(env.encoding)
+    source.readAsString(env.encoding)
       .then((text) {
           final out = dest.openOutputStream();
           try {
