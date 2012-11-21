@@ -181,6 +181,7 @@ ${_pre}final $viewVar = $name(parent: ${parentVar!=null?parentVar:'parent'}''');
           case "profile":
           case "style":
           case "class":
+          case "tag":
             error = true;
             break;
           default:
@@ -244,8 +245,13 @@ ${_pre}final $viewVar = $name(parent: ${parentVar!=null?parentVar:'parent'}''');
     _write("\n$_pre//$lineInfo");
     _write(bText ? _toComment(attrs["text"]): _toTagComment(name, attrs));
     _write("\n${_pre}final $viewVar = ");
-    if (bText) { 
-      _write("new $name()");
+    if (bText) {
+      var tag = attrs["tag"];
+      if (tag != null && (tag = tag.trim()).isEmpty) {
+        tag = null;
+        _warning("The tag attribute is empty", node);
+      }
+      _write(tag != null ? "new $name.tag('$tag')": "new $name()");
     } else {//if bText, ctrlVar must be null (since no control attr)
       _write("_this_ = ");
 
@@ -290,7 +296,7 @@ $_pre  })''');
         }
       } else {
         switch (attr) {
-        case "forEach": case "if": case "control":
+        case "forEach": case "if": case "control": case "tag":
           break; //ignore
         case "layout":
         case "profile":
