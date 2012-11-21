@@ -22,7 +22,7 @@ const messages = const ['great', 'wicked cool', 'sweet', 'fantastic'];
 ?>
 
 <Template name="Hello">
-  <Panel layout="type:linear; orient: vertical; gap: 12; spacing: 0"
+  <Panel layout="type:linear; orient: vertical; spacing: 8"
     profile="location: center center; width: 130; height: 80"
     control="ctrl: HelloControl">
     UXL is ${ctrl.message}!

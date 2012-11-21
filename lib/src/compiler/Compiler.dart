@@ -267,42 +267,27 @@ ${_pre}final $viewVar = $name(parent: ${parentVar!=null?parentVar:'parent'}''');
         if (!_isValidId(event))
           throw new CompileException("${_loc(node)}Illegal event name, $attr");
 
-        _write("\n$_pre  ..on.$event.add((_e){\n$_pre    ");
-        final Map<String, List<String>> cmds = new Map();
-        for (String act in val.split(',')) {
-          String name;
-          final i = act.indexOf('.');
-          if (i >= 0) {
-            name = act.substring(0, i).trim();
-            if (!_isValidId(name))
-              throw new CompileException("${_loc(node)}Illegal action, $act");
-            act = act.substring(i + 1);
-          }
+        String name, act = val;
+        final i = act.indexOf('.');
+        if (i >= 0) {
+          name = act.substring(0, i).trim();
+          act = act.substring(i + 1);
+        }
 
-          if ((act = act.trim()).isEmpty && name == null)
-             continue; //skip
-          if (!_isValidId(act))
-            throw new CompileException("${_loc(node)}Illegal action, $act");
+        if (!(act = act.trim()).isEmpty || name != null) {
+          if ((name != null && !_isValidId(name)) || !_isValidId(act))
+            throw new CompileException("${_loc(node)}Illegal action, $val");
 
           if (name == null)
             name = _current.lastCtrl;
-          if (name != null) {
-            cmds.putIfAbsent(name, () => []).add(act);
-            _write("$name.");
-          }
-          _writeln("$act(_e);");
+          name = name != null ? "$name.": "";
+
+          _write('''
+\n$_pre  ..on.$event.add((_e){
+$_pre    $name$act(_e);
+$_pre    ${name}onCommand('$act', _e);
+$_pre  })''');
         }
-        for (final name in cmds.keys) {
-          _write("$_pre    $name.onCommand([");
-          bool first = true;
-          for (final act in cmds[name]) {
-            if (first) first = false;
-            else _write(",");
-            _write("'$act'");
-          }
-          _writeln("], _e);");
-        }
-        _write("$_pre  })");
       } else {
         switch (attr) {
         case "forEach": case "if": case "control":

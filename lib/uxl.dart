@@ -88,8 +88,8 @@ class Control {
     layoutManager.flush(); //immediate for better responsive
   }
 
-  /** Called after one or multiple commands are received and processed by
-   * the command handler(s).
+  /** Called after a command is received and processed by
+   * the given command handler.
    *
    * Default: it invokes [render] to render the view ([view]) and all of its
    * descendant views. It is convenient, but, for better performance (if UI is
@@ -98,7 +98,7 @@ class Control {
    *
    * For example,
    *
-   *     void onCommand(List<String> commands, [ViewEvent event]) {
+   *     void onCommand(String command, [ViewEvent event]) {
    *       //does nothing
    *     }
    *     void delete(ViewEvent event) {
@@ -112,7 +112,7 @@ class Control {
    *
    * + [commands] - a list of commands being processed (never null).
    */
-  void onCommand(List<String> commands, [ViewEvent event]) => render();
+  void onCommand(String command, [ViewEvent event]) => render();
   /** Called after [view] and all children (defined in [template]) are instantiated.
    *
    * Default: does nothing. You can override it to handle the views if necessary.

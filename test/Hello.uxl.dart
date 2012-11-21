@@ -34,7 +34,7 @@ List<View> Hello({View parent}) { //24#
 
     //25# <Panel layout="type:linear; orient:...>
     final _va0 = _this_ = (_c0.view == null ? _c0.view = new Panel(): new Panel())
-      ..layout.text = '''type:linear; orient: vertical; gap: 12; spacing: 0'''
+      ..layout.text = '''type:linear; orient: vertical; spacing: 8'''
       ..profile.text = '''location: center center; width: 130; height: 80''';
     if (parent != null)
       parent.addChild(_va0, beforeChild);
@@ -50,7 +50,7 @@ List<View> Hello({View parent}) { //24#
       ..text = '''Change'''
       ..on.click.add((_e){
         _c0.change(_e);
-        _c0.onCommand(['change'], _e);
+        _c0.onCommand('change', _e);
       });
     _va0.addChild(_va0_1);
     return _rva;
