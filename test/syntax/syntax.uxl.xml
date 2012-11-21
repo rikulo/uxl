@@ -49,6 +49,7 @@ description="A template to create a group of input views">
     </Apply>
     More and more to come.
   </Apply>
+  <View tag="ul" tag-contentEditable="true" id="abc"/>
 </Template>
 
 <?dart

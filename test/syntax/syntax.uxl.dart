@@ -153,10 +153,18 @@ List<View> AnotherFood({View parent, foods}) { //44#
       parent.addChild(_v2);
     _rv.add(_v2);
   }
+
+  //52# <View tag="ul" tag-contentEditable="...>
+  final _v3 = _this_ = new View.tag('ul')
+    ..node.contentEditable = '''true'''
+    ..id = '''abc''';
+  if (parent != null)
+    parent.addChild(_v3);
+  _rv.add(_v3);
   return _rv;
 }
 
-//54#
+//55#
 //used to make the generated dart error free
 List<View> MagicBox({parent, owner}) => new List();
 List<View> InputHead({parent, label}) => new List();

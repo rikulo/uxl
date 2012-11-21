@@ -98,7 +98,7 @@ class Compiler {
       _doApply(elem.nodes);
       _checkAttrs(elem, _applyAllowed);
     } else if (_tmplDecls.contains(name)) {
-      _newTempalte(elem, name, attrs);
+      _newTemplate(elem, name, attrs);
       if (!elem.nodes.isEmpty)
         _warning("$name is a template. It can't have child elements.", elem);
     } else {
@@ -166,7 +166,7 @@ $_pre  List<View> ${_current.listVar} = new List(); View _this_;''');
    *
    *    Template(parent: parent, attr: val)..dataAttributes[attr] = val;
    */
-  void _newTempalte(Node node, String name, Map<String, String> attrs) {
+  void _newTemplate(Node node, String name, Map<String, String> attrs) {
     final vi = _current.startView(), viewVar = vi.name, parentVar = vi.parent;
     _write('''
 \n$_pre//${node.lineNumber}# ${_toTagComment(name, attrs)}
@@ -185,7 +185,8 @@ ${_pre}final $viewVar = $name(parent: ${parentVar!=null?parentVar:'parent'}''');
             error = true;
             break;
           default:
-            error = attr.startsWith("data-") || attr.startsWith("on.");
+            error = attr.startsWith("data-") || attr.startsWith("on.")
+              || attr.startsWith("tag-");
             break;
         }
 
@@ -246,28 +247,32 @@ ${_pre}final $viewVar = $name(parent: ${parentVar!=null?parentVar:'parent'}''');
     _write(bText ? _toComment(attrs["text"]): _toTagComment(name, attrs));
     _write("\n${_pre}final $viewVar = ");
     if (bText) {
+      _write("new $name()");
+    } else {//if bText, ctrlVar must be null (since no control attr)
+      _write("_this_ = ");
+
       var tag = attrs["tag"];
       if (tag != null && (tag = tag.trim()).isEmpty) {
         tag = null;
         _warning("The tag attribute is empty", node);
       }
-      _write(tag != null ? "new $name.tag('$tag')": "new $name()");
-    } else {//if bText, ctrlVar must be null (since no control attr)
-      _write("_this_ = ");
+      tag = tag != null ? "new $name.tag('$tag')": "new $name()";
 
       //we have to assign view as soon as possible since attributes might refer
       //to it. also control's template might be used in other place, so better to
       //check if it is null before assignment
       if (ctrlVar != null)
-        _write("($ctrlVar.view == null ? $ctrlVar.view = new $name(): new $name())");
+        _write("($ctrlVar.view == null ? $ctrlVar.view = $tag: $tag)");
       else
-        _write("new $name()");
+        _write("$tag");
     }
 
     for (final attr in attrs.keys) {
       String val = attrs[attr];
       if (attr.startsWith("data-")) {
         _write('\n$_pre  ..dataAttributes["${attr.substring(5)}"] = ${_unwrap(val)}');
+      } else if (attr.startsWith("tag-")) { //node attribute
+        _write('\n$_pre  ..node.${attr.substring(4)} = ${_unwrap(val)}');
       } else if (attr.startsWith("on.")) { //action
         final event = attr.substring(3);
         if (!_isValidId(event))
