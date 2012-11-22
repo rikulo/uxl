@@ -32,6 +32,54 @@ typedef List<View> ControlTemplate({View parent, View beforeChild});
  * might just change a small part of UI. To do so, you have to override [onCommand]
  * to call [render] only really necessary.
  *
+ * For example,
+ *
+ *     void onCommand(String command, [ViewEvent event]) {
+ *       //does nothing
+ *     }
+ *     void delete(ViewEvent event) {
+ *       model.delete(something);
+ *       view.query("#foo").... //update only the part of UI being affected
+ *     }
+ *     void reload(ViewEvent event) {
+ *       model.reload();
+ *       render(); //re-render the view
+ *     }
+ *
+ * ###Seperate Further with [DataModel]
+ *
+ * It is convenient to handle UI in control and make the model as a plain Dart
+ * object. However, it means if you alter the model directly (such in a timer),
+ * the control won't notice it and update UI for it.
+ *
+ * To update UI no matter how a model is accessed, you can do as follows:
+ *
+ * 1. Use one of data models in (in `package:rikulo/model.dart`) if appropriate.
+ * Or, implement your model by extending from `DataModel` (in `package:rikulo/model.dart`),
+ * and fire a proper event when something is changed (by calling `DataModel.sendEvent`).
+ * 2. In your control, listen to the events that your model might send and
+ * alter the UI accordingly.
+ *
+ * For example,
+ *
+ *     class YourModel extends Model {
+ *       void add(something) {
+ *         ...//modify the model
+ *         sendEvent(new YourDataEvent(this, 'add', something));
+ *       }
+ *     }
+ *
+ *     class YourControl extends Control {
+ *       YourControl(YourModel model) {
+ *         model.on.add.add((YourDataEvent e) {
+ *           ...//alter UI accordingly
+ *         });
+ *       }
+ *       void onCommand(String command, [ViewEvent event]) {
+ *         //does nothing
+ *       }
+ *     }
+ *
  * ##onRender callback
  *
  * When the view ([view]) and all of its descendant views are instantiated,
