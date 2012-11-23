@@ -4,9 +4,9 @@
 
 * [Home](http://rikulo.org)
 * [UXL Documentation](http://docs.rikulo.org/rikulo/latest/UXL)
-* [UXL API Reference](http://api.rikulo.org/rikulo-uxl/latest/)
+* [UXL API Reference](http://api.rikulo.org/uxl/latest/)
 * [Discussion](http://stackoverflow.com/questions/tagged/rikulo)
-* [Issues](https://github.com/rikulo/rikulo-uxl/issues)
+* [Issues](https://github.com/rikulo/uxl/issues)
 
 Rikulo UXL is distributed under the Apache 2.0 License.
 
@@ -27,7 +27,7 @@ To install stuff that is still in development, add this to your `pubspec.yam`:
 
     dependencies:
       rikulo_uxl:
-        git: git://github.com/rikulo/rikulo-uxl.git
+        git: git://github.com/rikulo/uxl.git
 
 For more information, please refer to [Pub: Dependencies](http://pub.dartlang.org/doc/pubspec.html#dependencies).
 
@@ -68,7 +68,7 @@ A template is actually compiled to a Dart function with the name specified in UX
       return _vcr_;
     }
 
-> For a complete dart file, please refer to [here](https://github.com/rikulo/rikulo-uxl/blob/master/example/scroll-view/ScrollView.uxl.dart).
+> For a complete dart file, please refer to [here](https://github.com/rikulo/uxl/blob/master/example/scroll-view/ScrollView.uxl.dart).
 
 Then, you can instantiate views based on the template whatever you want:
 
@@ -90,7 +90,7 @@ Then, you can instantiate views based on the template whatever you want:
 
 * It has to be compiled to Dart in advance.
 
-> Unlike [Rikulo EUL](https://github.com/rikulo/rikulo-eul), UXL has to be compiled to Dart. Performance is better and it is easier to debug.
+> Unlike [Rikulo EUL](https://github.com/rikulo/eul), UXL has to be compiled to Dart. Performance is better and it is easier to debug.
 
 ##Notes to Contributors
 
