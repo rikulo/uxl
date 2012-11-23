@@ -46,8 +46,8 @@ List<View> Inputs({View parent, friends, zoo}) { //13#
 
     if (each == 'multiline') {
 
-      //21# <MultilineBox if="each == 'multiline'">
-      final _v0_1_2 = _this_ = new MultilineBox();
+      //21# <TextArea if="each == 'multiline'">
+      final _v0_1_2 = _this_ = new TextArea();
       _v0_1.addChild(_v0_1_2);
     }
   }

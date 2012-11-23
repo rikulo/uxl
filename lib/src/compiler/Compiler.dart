@@ -115,7 +115,8 @@ class Compiler {
   void _doPI(ProcessingInstruction pi) {
     switch (pi.target) {
       case "dart":
-        _writeln("\n//${pi.lineNumber}#");
+        var ln = _ln(pi);
+        _writeln(ln.isEmpty ? ln: "\n//$ln#");
         _writeln(pi.data);
         break;
       case "template":
@@ -142,7 +143,7 @@ class Compiler {
 
     _startTemplate(args);
     _writeln("\n$_pre/** $desc */");
-    _outBeginTempl(name, args, elem.lineNumber);
+    _outBeginTempl(elem, name, args);
 
     _indent();
     for (final node in elem.nodes)
@@ -152,10 +153,12 @@ class Compiler {
     _outEndTempl();
     _endTemplate();
   }
-  void _outBeginTempl(String name, String args, int lineNumber) {
+  void _outBeginTempl(Node node, String name, String args) {
     args = args != null && !args.trim().isEmpty ? ", $args": "";
+    var ln = _ln(node);
+    if (!ln.isEmpty) ln = " //$ln#";
     _writeln('''
-${_pre}List<View> $name({View parent$args}) { //$lineNumber#
+${_pre}List<View> $name({View parent$args}) {$ln
 $_pre  List<View> ${_current.listVar} = new List(); View _this_;''');
   }
   void _outEndTempl() {
@@ -168,8 +171,10 @@ $_pre  List<View> ${_current.listVar} = new List(); View _this_;''');
    */
   void _newTemplate(Node node, String name, Map<String, String> attrs) {
     final vi = _current.startView(), viewVar = vi.name, parentVar = vi.parent;
+    var ln = _ln(node);
+    if (!ln.isEmpty) ln = "$ln# ";
     _write('''
-\n$_pre//${node.lineNumber}# ${_toTagComment(name, attrs)}
+\n$_pre//$ln${_toTagComment(name, attrs)}
 ${_pre}final $viewVar = $name(parent: ${parentVar!=null?parentVar:'parent'}''');
 
     for (final attr in attrs.keys) {
@@ -208,9 +213,6 @@ ${_pre}final $viewVar = $name(parent: ${parentVar!=null?parentVar:'parent'}''');
    *    new View()..attr = val..dataAttributes[attr] = val;
    */
   void _newView(Node node, String name, Map<String, String> attrs, [bool bText=false]) {
-    final lineInfo = node.lineNumber != null ? "${node.lineNumber}# ": "";
-        //Note: Text doesn't have line number
-
     var control = attrs["control"], ctrlName, ctrlVar, ctrlTempl;
     if (control != null) {
       if ((control = control.trim()).isEmpty) {
@@ -236,14 +238,16 @@ ${_pre}final $viewVar = $name(parent: ${parentVar!=null?parentVar:'parent'}''');
 
         final args = "View beforeChild";
         _startTemplate(args);
-        _outBeginTempl(ctrlTempl, args, node.lineNumber);
+        _outBeginTempl(node, ctrlTempl, args);
         _indent();
       }
     }
 
     var vi = _current.startView(), viewVar = vi.name, parentVar = vi.parent;
 
-    _write("\n$_pre//$lineInfo");
+    var ln = _ln(node);
+    if (!ln.isEmpty) ln = "$ln# ";
+    _write("\n$_pre//$ln");
     _write(bText ? _toComment(attrs["text"]): _toTagComment(name, attrs));
     _write("\n${_pre}final $viewVar = ");
     if (bText) {
@@ -395,15 +399,25 @@ ${_pre}final $viewVar = $ctrlTempl(parent: $parentArg$beforeArg)[0];''');
   _indent() => _pre = "$_pre  ";
   _undent() => _pre = _pre.substring(0, _pre.length - 2);
 
-  //Returns the information about the give node
+  //Returns the source and line information about the give node
   String _loc(Node node) {
     final sb = new StringBuffer();
     if (sourceName != null)
       sb.add(sourceName).add(':');
-    final ln = node.lineNumber;
-    if (ln != null)
+    final ln = _ln(node);
+    if (!ln.isEmpty)
       sb.add(ln).add(':');
     return sb.isEmpty ? '': sb.add(' ').toString();
+  }
+  //Returns the line information about the given node
+  String _ln(Node node) {
+    try {
+      var ln = node.lineNumber;
+      if (ln != null)
+        return ln.toString();
+    } catch (e) { //Browser's XML parser doesn't support lineNumber
+    }
+    return "";
   }
   ///show warning messages
   void _warning(String msg, [Node node]) {

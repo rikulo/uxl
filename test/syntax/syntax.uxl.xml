@@ -18,7 +18,7 @@ description="A template to create a group of input views">
     layout="type: linear; align: center; spacing: 0 3" class="foo1 foo2">
       ${each}
       <TextBox type="$each" if="each != 'multiline'"/>
-      <MultilineBox if="each == 'multiline'"/>
+      <TextArea if="each == 'multiline'"/>
     </View>
   </View>
 
