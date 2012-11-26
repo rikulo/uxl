@@ -50,6 +50,12 @@ description="A template to create a group of input views">
     More and more to come.
   </Apply>
   <View tag="ul" tag-contentEditable="true" id="abc"/>
+  <View tag="li">
+    this is inner text.
+    <![CDATA[
+    Not TextView
+    ]]>
+  </View>
 </Template>
 
 <?dart

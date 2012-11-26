@@ -161,10 +161,22 @@ List<View> AnotherFood({View parent, foods}) { //44#
   if (parent != null)
     parent.addChild(_v3);
   _rv.add(_v3);
+
+  //53# <View tag="li">
+  final _v4 = _this_ = new View.tag('li')
+    ..node.innerHTML = '''
+    this is inner text.
+    
+    Not TextView
+    
+  ''';
+  if (parent != null)
+    parent.addChild(_v4);
+  _rv.add(_v4);
   return _rv;
 }
 
-//55#
+//61#
 //used to make the generated dart error free
 List<View> MagicBox({parent, owner}) => new List();
 List<View> InputHead({parent, label}) => new List();

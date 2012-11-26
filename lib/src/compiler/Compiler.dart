@@ -243,9 +243,8 @@ ${_pre}final $viewVar = $name(parent: ${parentVar!=null?parentVar:'parent'}''');
       }
     }
 
-    var vi = _current.startView(), viewVar = vi.name, parentVar = vi.parent;
-
-    var ln = _ln(node);
+    var vi = _current.startView(), viewVar = vi.name, parentVar = vi.parent,
+      ln = _ln(node), tag, childGened;
     if (!ln.isEmpty) ln = "$ln# ";
     _write("\n$_pre//$ln");
     _write(bText ? _toComment(attrs["text"]): _toTagComment(name, attrs));
@@ -255,20 +254,20 @@ ${_pre}final $viewVar = $name(parent: ${parentVar!=null?parentVar:'parent'}''');
     } else {//if bText, ctrlVar must be null (since no control attr)
       _write("_this_ = ");
 
-      var tag = attrs["tag"];
+      tag = attrs["tag"];
       if (tag != null && (tag = tag.trim()).isEmpty) {
         tag = null;
         _warning("The tag attribute is empty", node);
       }
-      tag = tag != null ? "new $name.tag('$tag')": "new $name()";
 
       //we have to assign view as soon as possible since attributes might refer
       //to it. also control's template might be used in other place, so better to
       //check if it is null before assignment
+      final nv = tag != null ? "new $name.tag('$tag')": "new $name()";
       if (ctrlVar != null)
-        _write("($ctrlVar.view == null ? $ctrlVar.view = $tag: $tag)");
+        _write("($ctrlVar.view == null ? $ctrlVar.view = $nv: $nv)");
       else
-        _write("$tag");
+        _write("$nv");
     }
 
     for (final attr in attrs.keys) {
@@ -329,6 +328,13 @@ $_pre  })''');
         }
       }
     }
+    if (tag != null && node.nodes.length == 1) {
+      final n = node.nodes[0];
+      if (n is Text) {
+        childGened = true;
+        _write("\n$_pre  ..node.innerHTML = '''${n.text}'''");
+      }
+    }
     _writeln(";");
 
     if (parentVar != null)
@@ -339,8 +345,9 @@ ${_pre}if (parent != null)
 $_pre  parent.addChild($viewVar${_current.beforeArg});
 ${_pre}${_current.listVar}.add($viewVar);''');
 
-    for (final n in node.nodes)
-      _do(n);
+    if (childGened == null)
+      for (final n in node.nodes)
+        _do(n);
     _current.endView();
 
     if (control != null) {
