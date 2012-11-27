@@ -107,3 +107,12 @@ bool _hasWord(String s, String w) {
   }
   return false;
 }
+
+bool _containsEL(String s) {
+  for (int i = 0, j; (j = s.indexOf("\${", i)) >= 0;) {
+    if (j == 0 || s[j - 1] != '\\')
+      return true;
+    i = j + 2;
+  }
+  return false;
+}

@@ -41,7 +41,7 @@ description="A template to create a group of input views">
   <AnotherFood/>
 </Template>
 
-<Template name="AnotherFood" args="foods">
+<Template name="AnotherFood" args="foods, classes">
   <Apply forEach="each in foods">
     $each is found.
     <Apply if="each == 'orange'">
@@ -50,7 +50,7 @@ description="A template to create a group of input views">
     More and more to come.
   </Apply>
   <View tag="ul" tag-contentEditable="true" id="abc"/>
-  <View tag="li">
+  <View tag="li" class="${classes}">
     this is inner text.
     <![CDATA[
     Not TextView

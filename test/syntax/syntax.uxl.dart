@@ -119,7 +119,7 @@ List<View> Inputs({View parent, friends, zoo}) { //13#
 }
 
 /** Template, AnotherFood, for creating views. */
-List<View> AnotherFood({View parent, foods}) { //44#
+List<View> AnotherFood({View parent, foods, classes}) { //44#
   List<View> _rv = new List(); View _this_;
 
   for (var each in foods) {
@@ -162,7 +162,7 @@ List<View> AnotherFood({View parent, foods}) { //44#
     parent.addChild(_v3);
   _rv.add(_v3);
 
-  //53# <View tag="li">
+  //53# <View tag="li" class="${classes}">
   final _v4 = _this_ = new View.tag('li')
     ..node.innerHTML = '''
     this is inner text.
@@ -170,6 +170,8 @@ List<View> AnotherFood({View parent, foods}) { //44#
     Not TextView
     
   ''';
+  for (final _css in '''${classes}'''.split(' '))
+    _v4.classes.add(_css);
   if (parent != null)
     parent.addChild(_v4);
   _rv.add(_v4);

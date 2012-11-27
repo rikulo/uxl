@@ -244,7 +244,7 @@ ${_pre}final $viewVar = $name(parent: ${parentVar!=null?parentVar:'parent'}''');
     }
 
     var vi = _current.startView(), viewVar = vi.name, parentVar = vi.parent,
-      ln = _ln(node), tag, childGened;
+      ln = _ln(node), tag, childGened, clses;
     if (!ln.isEmpty) ln = "$ln# ";
     _write("\n$_pre//$ln");
     _write(bText ? _toComment(attrs["text"]): _toTagComment(name, attrs));
@@ -314,8 +314,11 @@ $_pre  })''');
           _write('\n$_pre  ..$attr.cssText = ${_unwrap(val)}');
           break;
         case "class":
-          for (final css in val.split(" "))
-            _write('\n$_pre  ..classes.add("$css")');
+          if (_containsEL(val))
+            clses = val;
+          else
+            for (final css in val.split(" "))
+              _write('\n$_pre  ..classes.add("$css")');
           break;
         default:
         //Note: to really handle it well, we have to detect if a field is text.
@@ -328,6 +331,7 @@ $_pre  })''');
         }
       }
     }
+
     if (tag != null && node.nodes.length == 1) {
       final n = node.nodes[0];
       if (n is Text) {
@@ -336,6 +340,11 @@ $_pre  })''');
       }
     }
     _writeln(";");
+
+    if (clses != null) {
+      _writeln("${_pre}for (final _css in '''$clses'''.split(' '))");
+      _writeln("${_pre}  $viewVar.classes.add(_css);");
+    }
 
     if (parentVar != null)
       _writeln("$_pre$parentVar.addChild($viewVar);");
