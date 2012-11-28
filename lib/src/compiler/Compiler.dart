@@ -244,7 +244,7 @@ ${_pre}final $viewVar = $name(parent: ${parentVar!=null?parentVar:'parent'}''');
     }
 
     var vi = _current.startView(), viewVar = vi.name, parentVar = vi.parent,
-      ln = _ln(node), tag, childGened, clses;
+      ln = _ln(node), tag, childGened;
     if (!ln.isEmpty) ln = "$ln# ";
     _write("\n$_pre//$ln");
     _write(bText ? _toComment(attrs["text"]): _toTagComment(name, attrs));
@@ -315,7 +315,7 @@ $_pre  })''');
           break;
         case "class":
           if (_containsEL(val))
-            clses = val;
+            _write("\n$_pre  ..classes.addAll('''$val'''.split(' '))");
           else
             for (final css in val.split(" "))
               _write('\n$_pre  ..classes.add("$css")');
@@ -340,11 +340,6 @@ $_pre  })''');
       }
     }
     _writeln(";");
-
-    if (clses != null) {
-      _writeln("${_pre}for (final _css in '''$clses'''.split(' '))");
-      _writeln("${_pre}  $viewVar.classes.add(_css);");
-    }
 
     if (parentVar != null)
       _writeln("$_pre$parentVar.addChild($viewVar);");

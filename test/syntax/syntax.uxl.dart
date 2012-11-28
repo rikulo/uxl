@@ -164,14 +164,13 @@ List<View> AnotherFood({View parent, foods, classes}) { //44#
 
   //53# <View tag="li" class="${classes}">
   final _v4 = _this_ = new View.tag('li')
+    ..classes.addAll('''${classes}'''.split(' '))
     ..node.innerHTML = '''
     this is inner text.
     
     Not TextView
     
   ''';
-  for (final _css in '''${classes}'''.split(' '))
-    _v4.classes.add(_css);
   if (parent != null)
     parent.addChild(_v4);
   _rv.add(_v4);
