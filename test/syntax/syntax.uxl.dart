@@ -165,7 +165,7 @@ List<View> AnotherFood({View parent, foods, classes}) { //44#
   //53# <View tag="li" class="${classes}">
   final _v4 = _this_ = new View.tag('li')
     ..classes.addAll('''${classes}'''.split(' '))
-    ..node.innerHTML = '''
+    ..node.innerHtml = '''
     this is inner text.
     
     Not TextView

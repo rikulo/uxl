@@ -28,27 +28,25 @@ if [ "$TERM" = "cygwin" ] || [ "$OSTYPE" = "cygwin" ] ; then
 else
   dartdoc=dartdoc
 fi
-outdir=$homedir/out
+outdir=$homedir/out/dartdoc
 libdir=$homedir/lib
 
 mkdir -p $outdir
-if [ -d $outdir/docs ] ; then
-	rm -rf $outdir/docs
-fi
+rm -rf $outdir/*
 
 PATH=$PATH:$SDK/bin
 echo Compiling $libdir
-$dartdoc --out $outdir/docs $libdir/*.dart
-if [ ! -f $outdir/docs/index.html ] ; then
-	echo $outdir/docs/index.html not found. Failed?
+$dartdoc --out $outdir $libdir/*.dart
+if [ ! -f $outdir/index.html ] ; then
+	echo $outdir/index.html not found. Failed?
 	exit 1
 fi
 
-cd $outdir/docs
+cd $outdir
 echo Process HTML files at $(pwd)
 tooldir=../../tool/lib
 
-function doHTML {
+function doHtml {
 	sedfl=$1
 	if [ ! -f $sedfl ] ; then
 		echo $sedfl not found
@@ -59,7 +57,7 @@ function doHTML {
 			(
 			echo Process $f
 			cd $f
-			doHTML ../$sedfl
+			doHtml ../$sedfl
 			)
 		elif [ ${f%.html} != $f ] ; then
 			sed -f $sedfl $f > dd.tmp
@@ -68,8 +66,4 @@ function doHTML {
 	done
 }
 
-if [ -f index.html ] ; then
-	doHTML $tooldir/index.html.sed
-else
-	echo index.html not found in $(pwd)
-fi
+doHtml $tooldir/index.html.sed

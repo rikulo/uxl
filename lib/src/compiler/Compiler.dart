@@ -336,7 +336,7 @@ $_pre  })''');
       final n = node.nodes[0];
       if (n is Text) {
         childGened = true;
-        _write("\n$_pre  ..node.innerHTML = '''${n.text}'''");
+        _write("\n$_pre  ..node.innerHtml = '''${n.text}'''");
       }
     }
     _writeln(";");
