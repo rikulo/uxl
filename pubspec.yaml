@@ -8,8 +8,6 @@ authors:
 - Tom Yeh <tomyeh@rikulo.org>
 homepage: http://rikulo.org
 dependencies:
-  unittest: { sdk: unittest }
-  args: { sdk: args }
-  logging: { sdk: logging }
+  args: any
   html5plus: { git: git://github.com/tomyeh/html5plus.git }
   rikulo: { git: git://github.com/rikulo/rikulo.git }
