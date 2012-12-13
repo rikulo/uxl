@@ -296,11 +296,7 @@ ${_pre}final $viewVar = $name(parent: ${parentVar!=null?parentVar:'parent'}''');
             name = _current.lastCtrl;
           name = name != null ? "$name.": "";
 
-          _write('''
-\n$_pre  ..on['$event'].add((_e){
-$_pre    $name$act(_e);
-$_pre    ${name}onCommand('$act', _e);
-$_pre  })''');
+          _write("\n$_pre  ..on['$event'].add((_e){\n$_pre    $name$act(_e);})");
         }
       } else {
         switch (attr) {

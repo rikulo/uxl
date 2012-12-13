@@ -13,6 +13,7 @@ class HelloControl extends Control {
 
   void change(e) {
     message = nextMessage();
+    render(); //re-render UI
   }
 }
 

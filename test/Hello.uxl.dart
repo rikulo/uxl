@@ -16,6 +16,7 @@ class HelloControl extends Control {
 
   void change(e) {
     message = nextMessage();
+    render(); //re-render UI
   }
 }
 
@@ -24,15 +25,15 @@ final Random random = new Random();
 const messages = const ['great', 'wicked cool', 'sweet', 'fantastic'];
 
 /** Template, Hello, for creating views. */
-List<View> Hello({View parent}) { //24#
+List<View> Hello({View parent}) { //25#
   List<View> _rv = new List(); View _this_;
 
   final _c0 = new HelloControl();
   final ctrl = _c0;
-  List<View> _c0T({View parent, View beforeChild}) { //25#
+  List<View> _c0T({View parent, View beforeChild}) { //26#
     List<View> _rva = new List(); View _this_;
 
-    //25# <Panel layout="type:linear; orient:...>
+    //26# <Panel layout="type:linear; orient:...>
     final _va0 = _this_ = (_c0.view == null ? _c0.view = new Panel(): new Panel())
       ..layout.text = '''type:linear; orient: vertical; spacing: 8'''
       ..profile.text = '''location: center center; width: 130; height: 80''';
@@ -45,13 +46,11 @@ List<View> Hello({View parent}) { //24#
       ..text = '''UXL is ${ctrl.message}!''';
     _va0.addChild(_va0_0);
 
-    //29# <Button text="Change" on.click="change">
+    //30# <Button text="Change" on.click="change">
     final _va0_1 = _this_ = new Button()
       ..text = '''Change'''
       ..on['click'].add((_e){
-        _c0.change(_e);
-        _c0.onCommand('change', _e);
-      });
+        _c0.change(_e);});
     _va0.addChild(_va0_1);
     return _rva;
   }

@@ -16,31 +16,24 @@ typedef List<View> ControlTemplate({View parent, View beforeChild});
  * Every control that can be assigned to the control attribute must extend from
  * this class.
  *
- * ##Automatically Re-rendering
+ * ##Alter Model and Update UI
  *
- * Each command bound by the `on` attribute will invoke [onCommand] after
- * the given method (aka., the command handler) has been called.
- * By default, [onCommand] will invoke [render]
- * to re-instantiate the view ([view]) and all of its descendant views.
+ * The simplest form of MVC is to make models as plain Dart objects, such as
+ * a list of customers and so on. Then, in the command handlers of a control,
+ * you can alert the model, and then update the UI accordingly.
  *
- * In other words, you don't have to worry how to synchronize the change back to UI.
- * You need to modify the model as you want in the command handler. UI will be
- * re-rendered to reflect the latest states.
+ * For example, you can alert the data and modify the UI directly in
+ * a command handler as follows:
  *
- * However, you might prefer to alter the UI the way you want.
- * For example, some command won't change the UI at all, and some command
- * might just change a small part of UI. To do so, you have to override [onCommand]
- * to call [render] only really necessary.
- *
- * For example,
- *
- *     void onCommand(String command, [ViewEvent event]) {
- *       //does nothing
- *     }
  *     void delete(ViewEvent event) {
  *       model.delete(something);
- *       view.query("#foo").... //update only the part of UI being affected
+ *       view.query("#foo").remove(); //update only the part of UI being affected
  *     }
+ *
+ * Alternatively, if there are a lot of views to modify,
+ * you can invoke [render] to re-render the whole hierarchy of views
+ * starting at [view] as follows:
+ *
  *     void reload(ViewEvent event) {
  *       model.reload();
  *       render(); //re-render the view
@@ -48,17 +41,19 @@ typedef List<View> ControlTemplate({View parent, View beforeChild});
  *
  * ###Seperate Further with [DataModel]
  *
- * It is convenient to handle UI in control and make the model as a plain Dart
- * object. However, it means if you alter the model directly (such in a timer),
- * the control won't notice it and update UI for it.
+ * It is convenient to handle both model and UI in a command handler.
+ * However, it also means, if you alter the model directly rather than invoke
+ * the command handlers (such as in a timer), UI won't be updated.
  *
- * To update UI no matter how a model is accessed, you can do as follows:
+ * Rather than having all data modification going through the command handlers,
+ * you can separate the coupling further as follows:
  *
- * 1. Use one of data models in (in `package:rikulo/model.dart`) if appropriate.
- * Or, implement your model by extending from `DataModel` (in `package:rikulo/model.dart`),
- * and fire a proper event when something is changed (by calling `DataModel.sendEvent`).
- * 2. In your control, listen to the events that your model might send and
- * alter the UI accordingly.
+ * 1. Use one of data models found in `package:rikulo/model.dart` if appropriate.
+ * Or, implement your model by extending from `DataModel` (in `package:rikulo/model.dart`).
+ * 2. Then, each method of the model that modifies the data (such as setters) shall
+ * invoke `DataModel.sendEvent` to send a proper event to notify the changes.
+ * 3. Finally, your control shall listen to these events that your model might
+ * send, and alter the UI accordingly.
  *
  * For example,
  *
@@ -75,8 +70,9 @@ typedef List<View> ControlTemplate({View parent, View beforeChild});
  *           ...//alter UI accordingly
  *         });
  *       }
- *       void onCommand(String command, [ViewEvent event]) {
- *         //does nothing
+ *       void add(e) {
+ *         model.add(something);
+ *         //no need to update UI here since the listener above will handle it
  *       }
  *     }
  *
@@ -136,31 +132,6 @@ class Control {
     layoutManager.flush(); //immediate for better responsive
   }
 
-  /** Called after a command is received and processed by
-   * the given command handler.
-   *
-   * Default: it invokes [render] to render the view ([view]) and all of its
-   * descendant views. It is convenient, but, for better performance (if UI is
-   * complicated), you can override this method not to re-render and alter UI
-   * manually.
-   *
-   * For example,
-   *
-   *     void onCommand(String command, [ViewEvent event]) {
-   *       //does nothing
-   *     }
-   *     void delete(ViewEvent event) {
-   *       model.delete(something);
-   *       view.query("#foo").... //update only the part of UI being affected
-   *     }
-   *     void reload(ViewEvent event) {
-   *       model.reload();
-   *       render(); //re-render the view
-   *     }
-   *
-   * + [commands] - a list of commands being processed (never null).
-   */
-  void onCommand(String command, [ViewEvent event]) => render();
   /** Called after [view] and all children (defined in [template]) are instantiated.
    *
    * Default: does nothing. You can override it to handle the views if necessary.
