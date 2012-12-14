@@ -9,5 +9,5 @@ authors:
 homepage: http://rikulo.org
 dependencies:
   args: any
-  html5plus: { git: git://github.com/tomyeh/html5plus.git }
+  html5plus: any
   rikulo: { git: git://github.com/rikulo/rikulo.git }

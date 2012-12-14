@@ -123,6 +123,7 @@ class Compiler {
         break; //handled by _scan
       default:
         _warning("Unknown <? ${pi.target} ?>", pi);
+        break;
     }
   }
 
