@@ -6,6 +6,7 @@ description: >
   to define UI in XML, and to use the MVC pattern to develop applications.
 authors:
 - Tom Yeh <tomyeh@rikulo.org>
+- Simon Pai <simonpai@rikulo.org>
 homepage: http://rikulo.org
 dependencies:
   args: any

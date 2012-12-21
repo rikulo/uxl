@@ -73,8 +73,30 @@ void build(List<String> arguments) {
   final List<String> removed = args["removed"];
   final bool clean = args["clean"];
   
-  for (String name in changed)
-    if (name.endsWith(".uxl.xml"))
-      compileFile(name);
+  if (clean) { // clean only
+    new Directory.current().list(recursive: true).onFile = (String name) {
+      if (name.endsWith(".uxl.dart"))
+        new File(name).delete();
+    };
+    
+  } else if (removed.isEmpty && changed.isEmpty) { // full build
+    new Directory.current().list(recursive: true).onFile = (String name) {
+      if (name.endsWith(".uxl.xml") || name.endsWith(".uxl"))
+        compileFile(name);
+    };
+    
+  } else {
+    for (String name in removed) {
+      final bool uxlxml = name.endsWith(".uxl.xml");
+      if (uxlxml || name.endsWith(".uxl")) {
+        final File gen = new File("${uxlxml ? name.substring(0, name.length - 4) : name}.dart");
+        if (gen.existsSync())
+          gen.delete();
+      }
+    }
+    for (String name in changed)
+      if (name.endsWith(".uxl.xml") || name.endsWith(".uxl"))
+        compileFile(name);
+  }
   
 }
