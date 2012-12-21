@@ -24,7 +24,7 @@ String sourceName, Encoding encoding: Encoding.UTF_8, bool verbose: false}) {
  * the file of given [destinationName].
  */
 void compileFile(String sourceName, {String destinationName, bool verbose : false, 
-Encoding encoding}) {
+Encoding encoding : Encoding.UTF_8}) {
   
   final source = new File(sourceName);
   if (!source.existsSync()) {
