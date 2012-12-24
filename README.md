@@ -33,11 +33,28 @@ For more information, please refer to [Pub: Dependencies](http://pub.dartlang.or
 
 ##Usage
 
-At first, you have to prepare a UXL file defining the user interface. Then, run `uc` (UXL compiler) to compile it into the dart file with [command line interface](http://en.wikipedia.org/wiki/Command-line_interface) as follows:
+First, you have to prepare UXL files defining the user interface. Next, there are two ways to compile it into dart files: automatic building with Dart Editor or manual compiling.
+
+###Build with Dart Editor
+
+To compile your UXL files automatically, you just need to add a build.dart file in the root directory of your project, with the following content:
+
+	import 'package:rikulo_uxl/compile.dart';
+	void main() {
+		build(new Options().arguments);
+	}
+
+With this build.dart script, whenever your UXL is modified, it will be re-compiled.
+
+###Compile Manually
+
+To compile a UXL file manually, run `uc` (UXL compiler) to compile it into the dart file with [command line interface](http://en.wikipedia.org/wiki/Command-line_interface) as follows:
 
     dart bin/uc.dart your-uxl-file(s)
 
 A dart file is generated for each UXL file you gave.
+
+###UXL and Its Generated Dart File
 
 A UXL file can define one or multiple templates. For example, here is a UXL file defining a template called `ScrollViewTemplate`:
 
@@ -70,7 +87,7 @@ A template is actually compiled to a Dart function with the name specified in UX
 
 > For a complete dart file, please refer to [here](https://github.com/rikulo/uxl/blob/master/example/scroll-view/ScrollView.uxl.dart).
 
-Then, you can instantiate views based on the template whatever you want:
+Having you UXL compiled, you can instantiate views based on the template whatever you want:
 
     void main() {
       final View mainView = new View()..addToDocument();
