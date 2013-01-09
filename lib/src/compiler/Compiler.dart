@@ -415,11 +415,11 @@ ${_pre}final $viewVar = $ctrlTempl(parent: $parentArg$beforeArg)[0];''');
   String _loc(Node node) {
     final sb = new StringBuffer();
     if (sourceName != null)
-      sb.add(sourceName).add(':');
+      sb..add(sourceName)..add(':');
     final ln = _ln(node);
     if (!ln.isEmpty)
-      sb.add(ln).add(':');
-    return sb.isEmpty ? '': sb.add(' ').toString();
+      sb..add(ln)..add(':');
+    return sb.isEmpty ? '': (sb..add(' ')).toString();
   }
   //Returns the line information about the given node
   String _ln(Node node) {
@@ -468,7 +468,7 @@ ${_pre}final $viewVar = $ctrlTempl(parent: $parentArg$beforeArg)[0];''');
     _write("\n");
   }
   String _toTagComment(String name, Map<String, String> attrs)  {
-    final StringBuffer sb = new StringBuffer("<").add(name);
+    final StringBuffer sb = new StringBuffer("<")..add(name);
     for (final attr in attrs.keys) {
       final val = attrs[attr].replaceAll("\n", "\\n");
       sb.add(' $attr="${val}"');
