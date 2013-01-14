@@ -25,7 +25,6 @@ String sourceName, Encoding encoding: Encoding.UTF_8, bool verbose: false}) {
  */
 void compileFile(String sourceName, {String destinationName, bool verbose : false, 
 Encoding encoding : Encoding.UTF_8}) {
-  
   final source = new File(sourceName);
   if (!source.existsSync()) {
     print("File not found: ${sourceName}");
@@ -87,7 +86,7 @@ void build(List<String> arguments) {
     
   } else {
     for (String name in removed) {
-      final bool uxlxml = name.endsWith(".uxl.xml");
+      final uxlxml = name.endsWith(".uxl.xml");
       if (uxlxml || name.endsWith(".uxl")) {
         final File gen = new File("${uxlxml ? name.substring(0, name.length - 4) : name}.dart");
         if (gen.existsSync())
@@ -98,5 +97,4 @@ void build(List<String> arguments) {
       if (name.endsWith(".uxl.xml") || name.endsWith(".uxl"))
         compileFile(name);
   }
-  
 }

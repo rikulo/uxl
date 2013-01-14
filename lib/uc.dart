@@ -1,13 +1,14 @@
+// UXL Compiler
+//
 //Copyright (C) 2012 Potix Corporation. All Rights Reserved.
 //History: Tue, Oct 23, 2012 10:35:48 AM
 // Author: tomyeh
 
 library rikulo_uxl_uc;
 
-import 'dart:io';
+import 'dart:io' show Encoding;
 import 'package:args/args.dart';
-import 'package:html5plus/parser.dart' show HtmlParser;
-import 'package:rikulo_uxl/compile.dart';
+import 'package:rikulo_uxl/compile.dart' show compileFile;
 
 const VERSION = "0.5.0";
 
