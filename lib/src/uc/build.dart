@@ -1,16 +1,7 @@
 //Copyright (C) 2012 Potix Corporation. All Rights Reserved.
 //History: Thu, Nov 01, 2012  4:53:53 PM
 // Author: tomyeh
-
-library rikulo_uxl_compile;
-
-import 'dart:io';
-import 'package:args/args.dart';
-import 'package:html5plus/dom.dart';
-import 'package:html5plus/parser.dart' show HtmlParser;
-
-part "src/compiler/Compiler.dart";
-part "src/compiler/Util.dart";
+part of rikulo_uc;
 
 /** Compiles the given [source] UXL document to the given output stream [out].
  * Notice that the caller has to close the output stream by himself.

@@ -1,7 +1,7 @@
 //Copyright (C) 2012 Potix Corporation. All Rights Reserved.
 //History: Mon, Nov 05, 2012 12:14:19 PM
 // Author: tomyeh
-part of rikulo_uxl_compile;
+part of rikulo_uc;
 
 /** A compiling exception.
  */

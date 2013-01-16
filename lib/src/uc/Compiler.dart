@@ -1,7 +1,7 @@
 //Copyright (C) 2012 Potix Corporation. All Rights Reserved.
 //History: Thu, Nov 01, 2012  4:56:10 PM
 // Author: tomyeh
-part of rikulo_uxl_compile;
+part of rikulo_uc;
 
 /**
  * The UXL compiler.
