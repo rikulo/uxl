@@ -49,7 +49,7 @@ List<View> Hello({View parent}) { //25#
     //30# <Button text="Change" on.click="change">
     final _va0_1 = _this_ = new Button()
       ..text = '''Change'''
-      ..on['click'].add((_e){
+      ..on.click.listen((_e){
         _c0.change(_e);});
     _va0.addChild(_va0_1);
     return _rva;

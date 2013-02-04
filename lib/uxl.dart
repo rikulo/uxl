@@ -66,7 +66,7 @@ typedef List<View> ControlTemplate({View parent, View beforeChild});
  *
  *     class YourControl extends Control {
  *       YourControl(YourModel model) {
- *         model.on.add.add((YourDataEvent e) {
+ *         model.on.add.listen((YourDataEvent e) {
  *           ...//alter UI accordingly
  *         });
  *       }
