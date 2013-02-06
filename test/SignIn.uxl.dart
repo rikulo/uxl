@@ -2,7 +2,7 @@
 //Source: test/SignIn.uxl.xml
 
 //1#
-import "package:rikulo/view.dart";
+import "package:rikulo_ui/view.dart";
 
 void main() {
   SignIn()[0].addToDocument();

@@ -2,7 +2,7 @@
 //Source: test/syntax/cascade.uxl.xml
 
 //1#
-import "package:rikulo/view.dart";
+import "package:rikulo_ui/view.dart";
 
 class A {
 	String foo;

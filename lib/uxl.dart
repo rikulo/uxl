@@ -3,9 +3,9 @@
 // Author: tomyeh
 library rikulo_uxl;
 
-import "package:rikulo/view.dart";
-import "package:rikulo/event.dart" show ViewEvent;
-import "package:rikulo/layout.dart" show layoutManager;
+import "package:rikulo_ui/view.dart";
+import "package:rikulo_ui/event.dart" show ViewEvent;
+import "package:rikulo_ui/layout.dart" show layoutManager;
 
 /** The template function of a control.
  */
@@ -48,8 +48,8 @@ typedef List<View> ControlTemplate({View parent, View beforeChild});
  * Rather than having all data modification going through the command handlers,
  * you can separate the coupling further as follows:
  *
- * 1. Use one of data models found in `package:rikulo/model.dart` if appropriate.
- * Or, implement your model by extending from `DataModel` (in `package:rikulo/model.dart`).
+ * 1. Use one of data models found in `package:rikulo_ui/model.dart` if appropriate.
+ * Or, implement your model by extending from `DataModel` (in `package:rikulo_ui/model.dart`).
  * 2. Then, each method of the model that modifies the data (such as setters) shall
  * invoke `DataModel.sendEvent` to send a proper event to notify the changes.
  * 3. Finally, your control shall listen to these events that your model might

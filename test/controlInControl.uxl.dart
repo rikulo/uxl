@@ -2,7 +2,7 @@
 //Source: test/controlInControl.uxl.xml
 
 //1#
-import "package:rikulo/view.dart";
+import "package:rikulo_ui/view.dart";
 import "package:rikulo_uxl/uxl.dart";
 
 void main() {
