@@ -3,7 +3,7 @@
 [Rikulo UXL](http://rikulo.org) (User-interface eXtensible language) is a markup language for describing applications' user interfaces. UXL is a simple variant of XML. It allows you to define user interfaces in a similar manner to authoring HTML and XML pages. It also allows you to use the Model-View-Controller (MVC) pattern to develop applications.
 
 * [Home](http://rikulo.org)
-* [UXL Documentation](http://docs.rikulo.org/rikulo/latest/UXL)
+* [UXL Documentation](http://docs.rikulo.org/ui/latest/UXL)
 * [UXL API Reference](http://api.rikulo.org/uxl/latest/)
 * [Discussion](http://stackoverflow.com/questions/tagged/rikulo)
 * [Issues](https://github.com/rikulo/uxl/issues)
