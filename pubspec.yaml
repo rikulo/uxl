@@ -11,4 +11,4 @@ homepage: http://rikulo.org
 dependencies:
   args: any
   html5plus: any
-  rikulo: any
+  rikulo_ui: any
