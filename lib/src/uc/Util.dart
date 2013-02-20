@@ -42,7 +42,7 @@ class _TemplateInfo {
     } else {
       idep = prev._idep;
       idep = idep.isEmpty ? "a": idep == "z" ? "A":
-        new String.fromCharCodes([idep.charCodeAt(0) + 1]);
+        new String.fromCharCodes([idep.codeUnitAt(0) + 1]);
         //assume at most 1+26+26 depth
       listVar = "_rv${idep}";
     }
@@ -81,12 +81,12 @@ const _ZERO = 48, _LOWER_A = 97, _UPPER_A = 65;
 
 bool _isLetter(String char) {
   if (char == null) return false;
-  int cc = char.charCodeAt(0);
+  int cc = char.codeUnitAt(0);
   return cc >= _LOWER_A && cc < _LOWER_A + 26 || cc >= _UPPER_A && cc < _UPPER_A + 26;
 }
 bool _isDigit(String char) {
   if (char == null) return false;
-  int cc = char.charCodeAt(0);
+  int cc = char.codeUnitAt(0);
   return cc >= _ZERO && cc < _ZERO + 10;
 }
 bool _isIdLetter(String cc)

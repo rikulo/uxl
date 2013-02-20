@@ -107,8 +107,6 @@ Having you UXL compiled, you can instantiate views based on the template whateve
 
 * It has to be compiled to Dart in advance.
 
-> Unlike [Rikulo EUL](https://github.com/rikulo/eul), UXL has to be compiled to Dart. Performance is better and it is easier to debug.
-
 ##Notes to Contributors
 
 ###Create Addons
