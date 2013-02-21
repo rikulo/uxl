@@ -73,8 +73,8 @@ List<View> Inputs({View parent, friends, zoo}) { //13#
   //29# <ListView model="${friends}" data-de...>
   final _v1 = _this_ = new ListView()
     ..model = friends
-    ..dataAttributes["detail"] = InputDetail
-    ..dataAttributes["header"] = InputHeader;
+    ..dataset["detail"] = InputDetail
+    ..dataset["header"] = InputHeader;
   if (parent != null)
     parent.addChild(_v1);
   _rv.add(_v1);

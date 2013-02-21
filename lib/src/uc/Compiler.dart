@@ -172,7 +172,7 @@ $_pre  List<View> ${_current.listVar} = new List(); View _this_;''');
 
   /** Handles the instantiation of a template.
    *
-   *    Template(parent: parent, attr: val)..dataAttributes[attr] = val;
+   *    Template(parent: parent, attr: val)..dataset[attr] = val;
    */
   void _newTemplate(Node node, String name, Map<String, String> attrs) {
     final vi = _current.startView(), viewVar = vi.name, parentVar = vi.parent;
@@ -215,7 +215,7 @@ ${_pre}final $viewVar = $name(parent: ${parentVar!=null?parentVar:'parent'}''');
   }
   /** Handles the instantiation of a view.
    *
-   *    new View()..attr = val..dataAttributes[attr] = val;
+   *    new View()..attr = val..dataset[attr] = val;
    */
   void _newView(Node node, String name, Map<String, String> attrs, [bool bText=false]) {
     var control = attrs["control"], ctrlName, ctrlVar, ctrlTempl;
@@ -278,7 +278,7 @@ ${_pre}final $viewVar = $name(parent: ${parentVar!=null?parentVar:'parent'}''');
     for (final attr in attrs.keys) {
       String val = attrs[attr];
       if (attr.startsWith("data-")) {
-        _write('\n$_pre  ..dataAttributes["${attr.substring(5)}"] = ${_unwrap(val)}');
+        _write('\n$_pre  ..dataset["${attr.substring(5)}"] = ${_unwrap(val)}');
       } else if (attr.startsWith("tag-")) { //node attribute
         _write('\n$_pre  ..node.${attr.substring(4)} = ${_unwrap(val)}');
       } else if (attr.startsWith("on.")) { //action
@@ -415,11 +415,11 @@ ${_pre}final $viewVar = $ctrlTempl(parent: $parentArg$beforeArg)[0];''');
   String _loc(Node node) {
     final sb = new StringBuffer();
     if (sourceName != null)
-      sb..add(sourceName)..add(':');
+      sb..write(sourceName)..write(':');
     final ln = _ln(node);
     if (!ln.isEmpty)
-      sb..add(ln)..add(':');
-    return sb.isEmpty ? '': (sb..add(' ')).toString();
+      sb..write(ln)..write(':');
+    return sb.isEmpty ? '': (sb..write(' ')).toString();
   }
   //Returns the line information about the given node
   String _ln(Node node) {
@@ -468,10 +468,10 @@ ${_pre}final $viewVar = $ctrlTempl(parent: $parentArg$beforeArg)[0];''');
     _write("\n");
   }
   String _toTagComment(String name, Map<String, String> attrs)  {
-    final StringBuffer sb = new StringBuffer("<")..add(name);
+    final StringBuffer sb = new StringBuffer("<")..write(name);
     for (final attr in attrs.keys) {
       final val = attrs[attr].replaceAll("\n", "\\n");
-      sb.add(' $attr="${val}"');
+      sb.write(' $attr="${val}"');
       if (sb.length > 40)
         return "${sb.toString().substring(0, 36).trim()}...>";
     }
