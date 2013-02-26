@@ -6,7 +6,7 @@ part of rikulo_uc;
 /** Compiles the given [source] UXL document to the given output stream [out].
  * Notice that the caller has to close the output stream by himself.
  */
-void compile(Document source, OutputStream out, {
+void compile(Document source, IOSink out, {
 String sourceName, Encoding encoding: Encoding.UTF_8, bool verbose: false}) {
   new Compiler(source, out, sourceName: sourceName, encoding: encoding, verbose: verbose).compile();
 }
@@ -35,7 +35,7 @@ Encoding encoding : Encoding.UTF_8}) {
   }
   
   source.readAsString(encoding).then((text) {
-    final out = dest.openOutputStream();
+    final out = dest.openWrite();
     try {
       compile(
           new HtmlParser(text, encoding: encoding.name, lowercaseElementName: false, 
@@ -65,16 +65,16 @@ void build(List<String> arguments) {
   final bool clean = args["clean"];
   
   if (clean) { // clean only
-    new Directory.current().list(recursive: true).onFile = (String name) {
-      if (name.endsWith(".uxl.dart"))
-        new File(name).delete();
-    };
-    
+    new Directory.current().list(recursive: true).listen((fse) {
+      if (fse is File && fse.name.endsWith(".uxl.dart"))
+        fse.delete();
+    });
+
   } else if (removed.isEmpty && changed.isEmpty) { // full build
-    new Directory.current().list(recursive: true).onFile = (String name) {
-      if (name.endsWith(".uxl.xml"))
-        compileFile(name);
-    };
+    new Directory.current().list(recursive: true).listen((fse) {
+      if (fse is File && fse.name.endsWith(".uxl.xml"))
+        compileFile(fse.name);
+    });
     
   } else {
     for (String name in removed) {
