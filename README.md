@@ -10,7 +10,7 @@
 
 Rikulo UXL is distributed under the Apache 2.0 License.
 
-##Install from Dart Pub Repository
+##Installation
 
 Add this to your `pubspec.yaml` (or create it):
 
@@ -20,16 +20,6 @@ Add this to your `pubspec.yaml` (or create it):
 Then run the [Pub Package Manager](http://pub.dartlang.org/doc) (comes with the Dart SDK):
 
     pub install
-
-##Install from Github for Bleeding Edge Stuff
-
-To install stuff that is still in development, add this to your `pubspec.yam`:
-
-    dependencies:
-      rikulo_uxl:
-        git: git://github.com/rikulo/uxl.git
-
-For more information, please refer to [Pub: Dependencies](http://pub.dartlang.org/doc/pubspec.html#dependencies).
 
 ##Usage
 
