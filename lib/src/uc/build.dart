@@ -35,7 +35,7 @@ Encoding encoding : Encoding.UTF_8}) {
   }
   
   source.readAsString(encoding).then((text) {
-    final out = dest.openWrite();
+    final out = dest.openWrite(encoding: encoding);
     try {
       compile(
           new HtmlParser(text, encoding: encoding.name, lowercaseElementName: false, 

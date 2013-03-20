@@ -458,7 +458,7 @@ ${_pre}final $viewVar = $ctrlTempl(parent: $parentArg$beforeArg)[0];''');
   }
 
   void _write(String str) {
-    destination.addString(str, encoding);
+    destination.write(str);
   }
   void _writeln([String str]) {
     if (str != null)
