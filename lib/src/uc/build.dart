@@ -34,7 +34,7 @@ Encoding encoding : Encoding.UTF_8}) {
     print("Compile ${source.path} to ${i > 0 ? dest.path.substring(i) : dest.path}");
   }
   
-  source.readAsString(encoding).then((text) {
+  source.readAsString(encoding: encoding).then((text) {
     final out = dest.openWrite(encoding: encoding);
     try {
       compile(
