@@ -51,7 +51,8 @@ Encoding encoding : Encoding.UTF_8}) {
 /** Compile changed UXL files. This method shall be called within build.dart,
  * with new Options().arguments as its [arguments].
  */
-void build(List<String> arguments) {
+void build(List<String> arguments, {String filenameMapper(String source),
+    Encoding encoding: Encoding.UTF_8}) {
   final ArgParser argParser = new ArgParser()
     ..addOption("changed", allowMultiple: true)
     ..addOption("removed", allowMultiple: true)
@@ -73,7 +74,8 @@ void build(List<String> arguments) {
   } else if (removed.isEmpty && changed.isEmpty) { // full build
     new Directory.current().list(recursive: true).listen((fse) {
       if (fse is File && fse.path.endsWith(".uxl.xml"))
-        compileFile(fse.path);
+        compileFile(fse.path, encoding: encoding,
+          destinationName: filenameMapper != null ? filenameMapper(fse.path): null);
     });
     
   } else {
@@ -86,6 +88,7 @@ void build(List<String> arguments) {
     }
     for (String name in changed)
       if (name.endsWith(".uxl.xml"))
-        compileFile(name);
+        compileFile(name, encoding: encoding,
+          destinationName: filenameMapper != null ? filenameMapper(name): null);
   }
 }
