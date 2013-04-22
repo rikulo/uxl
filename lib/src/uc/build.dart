@@ -29,6 +29,12 @@ Encoding encoding : Encoding.UTF_8}) {
   }
   final dest = new File(destinationName);
   
+  if (new Path(source.path).canonicalize().toNativePath() ==
+      new Path(dest.path).canonicalize().toNativePath()) {
+    print("Source and destination are the same file, $source");
+    return;
+  }
+
   if (verbose) {
     final int i = dest.path.lastIndexOf('/') + 1;
     print("Compile ${source.path} to ${i > 0 ? dest.path.substring(i) : dest.path}");

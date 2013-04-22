@@ -22,7 +22,7 @@ List<View> ScrollViewTemplate({View parent, rows: 30, cols: 30}) { //6#
 
       //11# <View style="border: 1px solid #553;...>
       final _v0_0 = _this_ = new View()
-        ..style.cssText = '''border: 1px solid #553; background-color: ${Css.color(250 - r * 4, 250 - c * 4, 200)}'''
+        ..style.cssText = '''border: 1px solid #553; background-color: ${CssUtil.color(250 - r * 4, 250 - c * 4, 200)}'''
         ..left = r * 50 + 2
         ..top = c * 50 + 2
         ..width = 46
