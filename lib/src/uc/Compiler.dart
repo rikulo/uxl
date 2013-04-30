@@ -169,10 +169,10 @@ $_pre  List<View> ${_current.listVar} = new List(); View _this_;''');
   }
 
   /** Handles the instantiation of a template.
-   *
-   *    Template(parent: parent, attr: val)..dataset[attr] = val;
    */
   void _newTemplate(Node node, String name, Map<String, String> attrs) {
+    //Generate: Template(parent: parent, attr: val)..dataset[attr] = val;
+
     final vi = _current.startView(), viewVar = vi.name, parentVar = vi.parent;
     var ln = _ln(node);
     if (!ln.isEmpty) ln = "$ln# ";
@@ -212,10 +212,10 @@ ${_pre}final $viewVar = $name(parent: ${parentVar!=null?parentVar:'parent'}''');
     _current.endView();
   }
   /** Handles the instantiation of a view.
-   *
-   *    new View()..attr = val..dataset[attr] = val;
    */
   void _newView(Node node, String name, Map<String, String> attrs, [bool bText=false]) {
+    //Generate: new View()..attr = val..dataset[attr] = val;
+
     var control = attrs["control"], ctrlName, ctrlVar, ctrlTempl;
     if (control != null) {
       if ((control = control.trim()).isEmpty) {

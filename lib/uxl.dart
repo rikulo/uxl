@@ -39,7 +39,7 @@ typedef List<View> ControlTemplate({View parent, View beforeChild});
  *       render(); //re-render the view
  *     }
  *
- * ###Seperate Further with [DataModel]
+ * ###Seperate Further with Model
  *
  * It is convenient to handle both model and UI in a command handler.
  * However, it also means, if you alter the model directly rather than invoke
