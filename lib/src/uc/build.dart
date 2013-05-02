@@ -72,13 +72,13 @@ void build(List<String> arguments, {String filenameMapper(String source),
   final bool clean = args["clean"];
   
   if (clean) { // clean only
-    new Directory.current().list(recursive: true).listen((fse) {
+    Directory.current.list(recursive: true).listen((fse) {
       if (fse is File && fse.path.endsWith(".uxl.dart"))
         fse.delete();
     });
 
   } else if (removed.isEmpty && changed.isEmpty) { // full build
-    new Directory.current().list(recursive: true).listen((fse) {
+    Directory.current.list(recursive: true).listen((fse) {
       if (fse is File && fse.path.endsWith(".uxl.xml"))
         compileFile(fse.path, encoding: encoding,
           destinationName: filenameMapper != null ? filenameMapper(fse.path): null);
