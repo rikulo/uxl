@@ -6,6 +6,7 @@
 * [UXL Documentation](http://docs.rikulo.org/ui/latest/UXL)
 * [UXL API Reference](http://api.rikulo.org/uxl/latest/)
 * [Discussion](http://stackoverflow.com/questions/tagged/rikulo)
+* [Source Code Repos](https://github.com/rikulo/uxl)
 * [Issues](https://github.com/rikulo/uxl/issues)
 
 Rikulo UXL is distributed under the Apache 2.0 License.
