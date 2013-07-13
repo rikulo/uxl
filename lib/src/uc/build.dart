@@ -29,8 +29,7 @@ Encoding encoding : Encoding.UTF_8}) {
   }
   final dest = new File(destinationName);
   
-  if (new Path(source.path).canonicalize().toNativePath() ==
-      new Path(dest.path).canonicalize().toNativePath()) {
+  if (Path.normalize(source.path) == Path.normalize(dest.path)) {
     print("Source and destination are the same file, $source");
     return;
   }

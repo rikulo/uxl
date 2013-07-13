@@ -178,7 +178,7 @@ $_pre  List<View> ${_current.listVar} = new List(); View _this_;''');
     if (!ln.isEmpty) ln = "$ln# ";
     _write('''
 \n$_pre//$ln${_toTagComment(name, attrs)}
-${_pre}final $viewVar = $name(parent: ${parentVar!=null?parentVar:'parent'}''');
+${_pre}final $viewVar = $name(parent: ${parentVar != null ? parentVar: 'parent'}''');
 
     for (final attr in attrs.keys) {
       if (attr != "forEach" && attr != "if") {
@@ -494,7 +494,9 @@ ${_pre}final $viewVar = $ctrlTempl(parent: $parentArg$beforeArg)[0];''');
 ///shorten the path to display
 String _shorten(String path) {
   try {
-    return new Path(path).relativeTo(new Path(Directory.current.path)).toString();
+    path = Path.relative(path);
+    return Path.separator == '\\' ? path.replaceAll('\\', '/'): path;
+      //such that it looks the same on different plaform
   } catch (err) {
     return path;
   }
