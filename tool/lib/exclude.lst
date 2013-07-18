@@ -11,8 +11,11 @@ list_proxy
 matcher
 meta
 metadata
+options
+path
 parser
 rikulo_async
+rikulo_browser
 rikulo_effect
 rikulo_event
 rikulo_gesture
