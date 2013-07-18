@@ -1,5 +1,5 @@
 name: rikulo_uxl
-version: 0.5.4
+version: 0.5.5
 description: > 
   Rikulo UXL Compiler for compiling UXL files to Dart files.
   Rikulo UXL (User-interface eXtensible Language) allows developers
@@ -12,4 +12,4 @@ dependencies:
   args: any
   html5plus: any
   rikulo_ui: any
-  pathos: any
+  path: any

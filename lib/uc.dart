@@ -9,7 +9,7 @@ library rikulo_uc;
 import 'dart:io';
 import 'dart:collection';
 import 'package:args/args.dart';
-import 'package:pathos/path.dart' as Path;
+import 'package:path/path.dart' as Path;
 import 'package:html5plus/dom.dart';
 import 'package:html5plus/parser.dart' show HtmlParser;
 
