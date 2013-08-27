@@ -7,7 +7,7 @@ part of rikulo_uc;
  * Notice that the caller has to close the output stream by himself.
  */
 void compile(Document source, IOSink out, {
-String sourceName, Encoding encoding: Encoding.UTF_8, bool verbose: false}) {
+String sourceName, Encoding encoding: UTF8, bool verbose: false}) {
   new Compiler(source, out, sourceName: sourceName, encoding: encoding, verbose: verbose).compile();
 }
 
@@ -15,7 +15,7 @@ String sourceName, Encoding encoding: Encoding.UTF_8, bool verbose: false}) {
  * the file of given [destinationName].
  */
 void compileFile(String sourceName, {String destinationName, bool verbose : false, 
-Encoding encoding : Encoding.UTF_8}) {
+Encoding encoding : UTF8}) {
   final source = new File(sourceName);
   if (!source.existsSync()) {
     print("File not found: ${sourceName}");
@@ -57,7 +57,7 @@ Encoding encoding : Encoding.UTF_8}) {
  * with new Options().arguments as its [arguments].
  */
 void build(List<String> arguments, {String filenameMapper(String source),
-    Encoding encoding: Encoding.UTF_8}) {
+    Encoding encoding: UTF8}) {
   final ArgParser argParser = new ArgParser()
     ..addOption("changed", allowMultiple: true)
     ..addOption("removed", allowMultiple: true)

@@ -7,6 +7,7 @@
 library rikulo_uc;
 
 import 'dart:io';
+import 'dart:convert';
 import 'dart:collection';
 import 'package:args/args.dart';
 import 'package:path/path.dart' as Path;
@@ -18,4 +19,4 @@ part "src/uc/build.dart";
 part "src/uc/Compiler.dart";
 part "src/uc/Util.dart";
 
-const VERSION = "0.5.0";
+const VERSION = "0.5.6";
