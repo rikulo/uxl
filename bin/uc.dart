@@ -9,4 +9,4 @@ library uc;
 
 import "package:rikulo_uxl/uc.dart" as uc;
 
-void main() => uc.main();
+void main(List<String> arguments) => uc.main(arguments);

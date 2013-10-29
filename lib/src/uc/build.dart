@@ -54,7 +54,7 @@ Encoding encoding : UTF8}) {
 }
 
 /** Compile changed UXL files. This method shall be called within build.dart,
- * with new Options().arguments as its [arguments].
+ * with the value passed to `main(List<String> arguments)` as its [arguments].
  */
 void build(List<String> arguments, {String filenameMapper(String source),
     Encoding encoding: UTF8}) {

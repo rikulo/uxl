@@ -11,23 +11,23 @@ class _Environ {
 
 /** The entry point of UXL compiler. Used to implement `bin/uc.dart`.
  */
-void main() {
+void main(List<String> arguments) {
   final env = new _Environ();
-  if (!_parseArgs(env))
+  if (!_parseArgs(arguments, env))
     return;
 
   for (var name in env.sources)
     compileFile(name, encoding: env.encoding, verbose: env.verbose);
 }
 
-bool _parseArgs(_Environ env) {
+bool _parseArgs(List<String> arguments, _Environ env) {
   final argParser = new ArgParser()
     ..addOption("encoding", abbr: 'e',
       help: "Specify character encoding used by source file, such as utf-8, latin-1, ascii")
     ..addFlag("help", abbr: 'h', negatable: false, help: "Display this message")
     ..addFlag("verbose", abbr: 'v', negatable: false, help: "Enable verbose output")
     ..addFlag("version", negatable: false, help: "Version information");
-  final args = argParser.parse(new Options().arguments);
+  final args = argParser.parse(arguments);
 
   final usage = "Usage: uc [<flags>] <uxl-file> [<uxl-file>...]";
   if (args['version']) {
