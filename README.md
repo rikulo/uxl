@@ -50,9 +50,10 @@ A dart file is generated for each UXL file you gave.
 
 A UXL file can define one or multiple templates. For example, here is a UXL file defining a template called `ScrollViewTemplate`:
 
-    <Template name="ScrollViewTemplate" args="rows: 30, cols: 30">
-      <ScrollView class="scroll-view"
-      profile="location: center center; width: 80%; height: 80%">
+```xml
+  <Template name="ScrollViewTemplate" args="rows: 30, cols: 30">
+    <ScrollView class="scroll-view"
+    profile="location: center center; width: 80%; height: 80%">
         <Apply forEach="r = 0; r < rows; ++r">
           <Apply forEach="c = 0; c < cols; ++c">
             <View style="border: 1px solid #553; background-color: ${CSS.color(250 - r * 4, 250 - c * 4, 200)}"
@@ -61,8 +62,9 @@ A UXL file can define one or multiple templates. For example, here is a UXL file
             </View>
           </Apply>
         </Apply>
-      </ScrollView>
-    </Template>
+    </ScrollView>
+  </Template>
+```
 
 A template is actually compiled to a Dart function with the name specified in UXL:
 
